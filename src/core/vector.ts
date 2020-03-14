@@ -25,11 +25,11 @@ export class Vector {
 
     public add(value: Vector | number): Vector {
         if (value instanceof Vector) {
-            this._X *= value.x;
-            this._Y *= value.y;
+            this._X += value.x;
+            this._Y += value.y;
         } else {
-            this._X *= value;
-            this._Y *= value;
+            this._X += value;
+            this._Y += value;
         }
         return this;
     }

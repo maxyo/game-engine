@@ -4,8 +4,9 @@ import {Client} from "../../client/client";
 import * as socketio from 'socket.io'
 import {Server, Socket} from 'socket.io'
 import {Command} from "../../commands/command";
+import {GameMode} from "../../../game";
 
-export class WebsocketTransport extends Transport {
+export class WebsocketServer extends Transport {
     clientsCollection: ClientCollection = new ClientCollection();
     server: Server;
 

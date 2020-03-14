@@ -1,9 +1,14 @@
 import {Command} from "../network/commands/command";
 import {Updatable} from "../scene/atom/interfaces/updatable";
+import {Game} from "../game";
 
 export abstract class Manager implements Updatable {
-    public abstract flushCommands(): Command[] | null;
+    protected readonly game: Game;
+
+    constructor(game: Game) {
+        this.game = game;
+    }
 
     public abstract update(tick_lag: number): void;
-}
 
+}

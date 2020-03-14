@@ -1,5 +1,5 @@
 import {Command} from "../network/commands/command";
 
-export interface ManagerWithCommands {
-    flushCommands(): Command[] | null;
+export abstract class ManagerWithCommands {
+    public abstract flushCommands(): Command[] | null;
 }

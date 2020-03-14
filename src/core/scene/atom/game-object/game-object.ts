@@ -6,21 +6,18 @@ import {Updatable} from "../interfaces/updatable";
 import {CreateAtomCommand} from "../../../network/commands/create-atom-command";
 import {SyncAtomCommand} from "../../../network/commands/sync-atom-command";
 import {Command} from "../../../network/commands/command";
+import {Game, GameMode} from "../../../game";
+import {isUpdatable} from "../../../util/functions";
 
 export class GameObject extends Atom {
     @sync transform: Transform;
 
     protected static manager: GameObjectsManager;
 
-    protected constructor(name?: string) {
+    constructor(name?: string) {
         super(name);
         this.transform = new Transform();
-    }
-
-    public static create(...args): GameObject {
-        let go = new GameObject(...args);
-        this.manager.attach(go);
-        return go;
+        console.log(Object.getPrototypeOf(this).constructor)
     }
 
     public destroy() {
@@ -37,14 +34,20 @@ export class GameObjectsManager extends Manager {
     private createCommand: CreateAtomCommand = new CreateAtomCommand;
     private syncCommand: SyncAtomCommand = new SyncAtomCommand;
 
-    constructor() {
-        super();
+    constructor(game: Game) {
+        super(game);
         GameObject.setManager(this);
+
+        if (game.gameMode === GameMode.Server) {
+            this.update = this.updateForServer;
+        } else {
+            this.update = this.updateForClient;
+        }
     }
 
     public attach(item: GameObject) {
-        if (item instanceof Updatable) {
-            this.needToUpdate.push(item);
+        if (isUpdatable(item)) {
+            this.needToUpdate.push(item as GameObject & Updatable);
         }
 
         this.items.push(item);
@@ -57,12 +60,20 @@ export class GameObjectsManager extends Manager {
         this.items.unshift(item);
     }
 
-    public update(tpf: number) {
+    public update(tpf: number) {}
+
+    protected updateForServer(tpf: number) {
         for (let item of this.needToUpdate) {
             item.update(tpf);
             if (item.needToSync()) {
                 this.syncCommand.objects.push(item);
             }
+        }
+    }
+
+    protected updateForClient(tpf: number) {
+        for (let item of this.needToUpdate) {
+            item.update(tpf);
         }
     }
 
@@ -79,10 +90,6 @@ export class GameObjectsManager extends Manager {
             this.createCommand = new CreateAtomCommand();
         }
 
-        if (result.length) {
-            return result;
-        }
-        return null;
+        return result;
     }
-
 }

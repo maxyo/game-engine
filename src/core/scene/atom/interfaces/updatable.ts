@@ -1,3 +1,3 @@
-export abstract class Updatable {
-    public abstract update(tick_lag: number): void;
+export interface Updatable {
+    update(tick_lag: number): void;
 }

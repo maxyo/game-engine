@@ -1,10 +1,17 @@
 {
   "compilerOptions": {
+    "experimentalDecorators": true,
+    "alwaysStrict": true,
     "module": "commonjs",
-    "target": "es5",
-    "sourceMap": true
+    "target": "es2015",
+    "sourceMap": true,
+    "allowJs": true,
+    "baseUrl": ".",
+    "paths": {
+      "msgpack": ["node_modules/msgpack-js/msgpack"]
+    }
   },
   "exclude": [
-    "node_modules"
+    "dist"
   ]
 }

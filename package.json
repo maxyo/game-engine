@@ -8,7 +8,8 @@
     "type-check": "tsc --noEmit",
     "type-check:watch": "npm run type-check -- --watch",
     "build": "npm run build:js",
-    "build:js": "node_modules/.bin/tsc"
+    "build:js": "node_modules/.bin/tsc",
+    "watch": "webpack --watch --config webpack.frontend.config.js & webpack --watch --config webpack.player.config.js & webpack --watch --config webpack.server.config.js"
   },
   "keywords": [],
   "author": "maxyo",
@@ -18,12 +19,20 @@
   },
   "dependencies": {
     "@types/shortid": "0.0.29",
+    "@types/socket.io": "^2.1.4",
+    "@types/socket.io-client": "^1.4.32",
     "@types/websocket": "^1.0.0",
-    "events": "^3.1.0",
-    "ws": "^7.2.1"
+    "msgpack-js": "^0.3.0",
+    "shortid": "^2.2.15",
+    "socket.io-client": "^2.3.0",
+    "socket.io-server": "^1.0.0-b",
+    "ts-loader": "^6.2.1",
+    "uws": "^9.148.0",
+    "webpack": "^4.42.0"
   },
   "devDependencies": {
     "@types/node": "^13.7.0",
-    "typescript": "^3.7.5"
+    "typescript": "^3.7.5",
+    "webpack-cli": "^3.3.11"
   }
 }

@@ -3,7 +3,7 @@ import {Tile} from "./atom/tile/tile";
 import {GameObject} from "./atom/game-object/game-object";
 
 export class Scene {
-    objects: GameObject[];
-    tiles: Tile[];
-    size: Vector;
+    objects: GameObject[] = [];
+    tiles: Tile[] = [];
+    size: Vector = new Vector(100,100);
 }
