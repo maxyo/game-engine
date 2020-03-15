@@ -17,12 +17,14 @@
     "lib": "lib"
   },
   "dependencies": {
-    "@types/shortid": "0.0.29",
-    "@types/websocket": "^1.0.0",
-    "events": "^3.1.0",
-    "ws": "^7.2.1"
+    "msgpack": "^1.0.3",
+    "shortid": "^2.2.15",
+    "socket.io": "^2.3.0"
   },
   "devDependencies": {
+    "@types/shortid": "0.0.29",
+    "@types/socket.io": "^1.0.0",
+    "@types/msgpack": "^0.0.30",
     "@types/node": "^13.7.0",
     "typescript": "^3.7.5"
   }

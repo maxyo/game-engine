@@ -1,7 +1,8 @@
 import {Command} from "./command";
+import {Atom} from "../../scene/atom/atom";
 
 export class DeleteAtomCommand extends Command {
-    public id: number;
+    objects: Array<Atom> = [];
 
     execute() {
     }

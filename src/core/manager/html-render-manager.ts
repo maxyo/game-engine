@@ -1,8 +1,7 @@
 import {Manager} from "./manager";
-import {Updatable} from "../scene/atom/interfaces/updatable";
+import {IUpdatableManager} from "./manager-types";
 
-export class RenderManager extends Manager implements Updatable{
+export class RenderManager extends Manager implements IUpdatableManager{
     update(tick_lag: number): void {
     }
-
 }

@@ -3,9 +3,12 @@ import {IServerConfig} from "websocket";
 import {Transport} from "./network/transport/transport";
 import {Manager} from "./manager/manager";
 import {NetworkService} from "./network/network-service";
-import {GameObjectsManager} from "./scene/atom/game-object/game-object";
+import {SyncManager} from "./scene/atom/game-object/game-object";
 import {Scene} from "./scene/scene";
 import {sleep} from "./util/functions";
+import {INetworkManager, isNetworkManager, isUpdatableManager, IUpdatableManager} from "./manager/manager-types";
+import {IUpdatable} from "./scene/atom/interfaces/IUpdatable";
+import {RenderManager} from "./manager/html-render-manager";
 
 export class Game {
     /**
@@ -17,25 +20,24 @@ export class Game {
 
     private name: string;
 
-    private managers: Manager[] = [];
+    private allManagers: Manager[] = [];
+    private networkManagers: Array<Manager & INetworkManager> = [];
+    private updatableManagers: Array<Manager & IUpdatableManager> = [];
+
+    private state: GameState = GameState.Preparing;
+
     private readonly networkService: NetworkService;
 
     private readonly transport: Transport;
 
     private stopping: boolean;
 
-    public static instance;
-
     private mode: GameMode;
+
+    public scene: Scene;
 
 
     constructor(config: IGameConfig) {
-        if (Game.instance) {
-            // WTF
-            throw new Error('Trying to create another Game instance.');
-        }
-        Game.instance = this;
-
         this.initManagers();
 
         this.transport = new WebsocketTransport(config.serverConfig);
@@ -43,13 +45,30 @@ export class Game {
     }
 
     public start() {
+        this.state = GameState.Running;
         this.loop();
     }
 
     private initManagers() {
-        this.managers = [
-            new GameObjectsManager,
-        ];
+
+        if (this.mode === GameMode.Server) {
+            this.allManagers = [
+                new SyncManager(this),
+            ];
+        } else {
+            this.allManagers = [
+                new RenderManager(this)
+            ];
+        }
+
+        for (let manager of this.allManagers) {
+            if (isNetworkManager(manager)) {
+                this.networkManagers.push(manager as Manager & INetworkManager);
+            }
+            if (isUpdatableManager(manager)) {
+                this.updatableManagers.push(manager as Manager & IUpdatableManager);
+            }
+        }
     }
 
     private async loop() {
@@ -58,7 +77,7 @@ export class Game {
         let elapsed = 0;
         let lag = 0;
 
-        while (!this.stopping) {
+        while (this.state === GameState.Running) {
             curTime = Date.now();
             elapsed = curTime - prevTime;
             lag += elapsed;
@@ -80,14 +99,14 @@ export class Game {
     }
 
     private processNetwork() {
-        for (let manager of this.managers) {
+        for (let manager of this.networkManagers) {
             this.networkService.pushCommands(manager.flushCommands());
         }
         this.networkService.transmit();
     }
 
     private processManagers(tick_lag: number) {
-        for (let manager of this.managers) {
+        for (let manager of this.updatableManagers) {
             manager.update(tick_lag);
         }
     }
@@ -105,7 +124,7 @@ export class Game {
     }
 
     private stop() {
-        this.stopping = true;
+        this.state = GameState.Stopping;
     }
 }
 
@@ -122,6 +141,12 @@ export enum GameMode {
     Server,
     Front,
     Player
+}
+
+export enum GameState {
+    Preparing,
+    Running,
+    Stopping
 }
 
 const MS_PER_TICK: number = 16;
