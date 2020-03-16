@@ -1,7 +1,6 @@
 import {SpriteResource} from '../../resources/sprite-resource';
 import {sync, Transportable} from '../../network/transport/transportable';
 import {Manager} from "../../manager/manager";
-import {GameObjectsManager} from "./game-object/game-object";
 
 let LATEST_ID = 0;
 
@@ -13,8 +12,6 @@ export abstract class Atom extends Transportable {
 
     @sync name: string;
     @sync sprite: SpriteResource;
-
-    protected static manager: Manager;
 
     protected constructor(name = '') {
         super();
@@ -37,13 +34,6 @@ export abstract class Atom extends Transportable {
     }
 
     protected onDestroy() {
-    }
-
-    public static setManager(manager: GameObjectsManager) {
-        if (this.manager) {
-            throw new Error();
-        }
-        this.manager = manager;
     }
 }
 

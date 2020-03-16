@@ -1,14 +1,11 @@
 import {Command} from "../network/commands/command";
-import {Updatable} from "../scene/atom/interfaces/updatable";
+import {IUpdatable} from "../scene/atom/interfaces/IUpdatable";
 import {Game} from "../game";
 
-export abstract class Manager implements Updatable {
-    protected readonly game: Game;
-
-    constructor(game: Game) {
+export abstract class Manager {
+    protected game: Game;
+    constructor(game:Game) {
         this.game = game;
     }
-
-    public abstract update(tick_lag: number): void;
-
 }
+

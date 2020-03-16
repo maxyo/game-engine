@@ -3,9 +3,8 @@ import {IServerConfig} from "websocket";
 import {Transport} from "./network/transport/transport";
 import {Manager} from "./manager/manager";
 import {NetworkService} from "./network/network-service";
-import {GameObjectsManager} from "./scene/atom/game-object/game-object";
+import {SyncManager} from "./scene/atom/game-object/game-object";
 import {Scene} from "./scene/scene";
-import {isUpdatable, sleep} from "./util/functions";
 import {WebsocketClient} from "./network/transport/client/websocket-client";
 import {Updatable} from "./scene/atom/interfaces/updatable";
 import {ManagerWithCommands} from "./manager/manager-types";
@@ -13,6 +12,10 @@ import {HtmlRenderManager} from "./manager/html-render-manager";
 import {SceneLoader} from "./scene/scene-loader";
 import {encode} from "msgpack";
 import {SomeObject} from "./scene/atom/game-object/some-object";
+import {sleep} from "./util/functions";
+import {INetworkManager, isNetworkManager, isUpdatableManager, IUpdatableManager} from "./manager/manager-types";
+import {IUpdatable} from "./scene/atom/interfaces/IUpdatable";
+import {RenderManager} from "./manager/html-render-manager";
 
 export class Game {
     /**
@@ -24,9 +27,11 @@ export class Game {
 
     private name: string;
 
-    private managers: Array<Manager> = [];
-    private managersUpdatable: Array<Manager & Updatable> = [];
-    private managersWithCommands: Array<Manager & ManagerWithCommands> = [];
+    private allManagers: Manager[] = [];
+    private networkManagers: Array<Manager & INetworkManager> = [];
+    private updatableManagers: Array<Manager & IUpdatableManager> = [];
+
+    private state: GameState = GameState.Preparing;
 
     private readonly networkService: NetworkService;
     private readonly transport: Transport;
@@ -49,10 +54,6 @@ export class Game {
             this.transport = new WebsocketClient(config.serverAddress, config.port);
         }
         this.networkService = new NetworkService(this.transport);
-
-        let obj = new SomeObject('asd');
-
-        console.log((JSON.parse(JSON.stringify(obj)) as SomeObject));
     }
 
     public start() {
@@ -65,27 +66,25 @@ export class Game {
     }
 
     private initManagers() {
-        if (this.gameMode == GameMode.Server) {
-            this.managers = [
-                new GameObjectsManager(this),
+
+        if (this.mode === GameMode.Server) {
+            this.allManagers = [
+                new SyncManager(this),
             ];
         } else {
-            this.managers = [
-                new GameObjectsManager(this),
-                new HtmlRenderManager(this)
+            this.allManagers = [
+                new RenderManager(this)
             ];
         }
 
-        for (let manager of this.managers) {
-            if (isUpdatable(manager)) {
-                this.managersUpdatable.push(manager);
+        for (let manager of this.allManagers) {
+            if (isNetworkManager(manager)) {
+                this.networkManagers.push(manager as Manager & INetworkManager);
             }
-            if (manager instanceof ManagerWithCommands) {
-                this.managersWithCommands.push(manager);
+            if (isUpdatableManager(manager)) {
+                this.updatableManagers.push(manager as Manager & IUpdatableManager);
             }
         }
-
-        console.log(this.managers)
     }
 
     private async loop() {
@@ -116,14 +115,14 @@ export class Game {
     }
 
     private processNetwork() {
-        for (let manager of this.managersWithCommands) {
+        for (let manager of this.networkManagers) {
             this.networkService.pushCommands(manager.flushCommands());
         }
         this.networkService.transmit();
     }
 
     private processManagers(tick_lag: number) {
-        for (let manager of this.managersUpdatable) {
+        for (let manager of this.updatableManagers) {
             manager.update(tick_lag);
         }
     }
@@ -140,7 +139,7 @@ export class Game {
     }
 
     private stop() {
-        this.state = GameState.Stop;
+        this.state = GameState.Stopping;
     }
 }
 
@@ -162,7 +161,7 @@ export enum GameMode {
 export enum GameState {
     Preparing,
     Running,
-    Stop,
+    Stopping
 }
 
 const MS_PER_TICK: number = 16;
