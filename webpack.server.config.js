@@ -18,7 +18,7 @@ module.exports = {
   resolve: {
     extensions: [ '.tsx', '.ts', '.js' ],
     alias: {
-      msgpack$: path.resolve(__dirname, 'node_modules/msgpack-js/msgpack.js'),
+      msgpack$: path.resolve(__dirname, 'node_modules/msgpack-lite/index.js'),
     }
   },
   output: {

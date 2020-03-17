@@ -1,4 +1,4 @@
-import {encode} from "msgpack";
+import {encode} from "msgpack-lite";
 import {Game} from "../../game";
 import {ActionCommand} from "./action-command";
 

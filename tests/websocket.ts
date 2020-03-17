@@ -1,4 +1,4 @@
-import { decode} from "msgpack";
+import { decode} from "msgpack-lite";
 
 const io = require('socket.io-client');
 
