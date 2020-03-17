@@ -16,8 +16,7 @@ export abstract class Atom extends Transportable {
 
     @sync position: Vector = new Vector;
 
-    @sync
-    private components: Component[] = [];
+    @sync private components: Component[] = [];
 
     protected constructor(name = '') {
         super();
