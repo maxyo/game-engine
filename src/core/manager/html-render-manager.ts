@@ -65,7 +65,7 @@ export class HtmlRenderManager extends Manager {
     }
 
     onSceneAtomDetached(atom: Atom) {
-
+        this.detach(atom.getComponent(RenderComponent));
     }
 
     private attach(component: RenderComponent) {
