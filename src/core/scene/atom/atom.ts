@@ -1,6 +1,7 @@
 import {SpriteResource} from '../../resources/sprite-resource';
 import {sync, Transportable} from '../../network/transport/transportable';
-import {Manager} from "../../manager/manager";
+import {Component} from "../../component/component";
+import {Vector} from 'src/core/vector';
 
 let LATEST_ID = 0;
 
@@ -12,6 +13,11 @@ export abstract class Atom extends Transportable {
 
     @sync name: string;
     @sync sprite: SpriteResource;
+
+    @sync position: Vector = new Vector;
+
+    @sync
+    private components: Component[] = [];
 
     protected constructor(name = '') {
         super();
@@ -34,6 +40,14 @@ export abstract class Atom extends Transportable {
     }
 
     protected onDestroy() {
+    }
+
+    public getComponent(type: typeof Component) {
+        for (let component of this.components) {
+            if (component instanceof type) {
+                return component;
+            }
+        }
     }
 }
 

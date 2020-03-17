@@ -2,7 +2,7 @@ import {Transport} from "../transport";
 import * as io from "socket.io-client";
 import {Client} from "../../client/client";
 import {Command} from "../../commands/command";
-import Socket = SocketIOClient.Socket;
+import {Socket} from "socket.io";
 
 export class WebsocketClient extends Transport {
     socket: Socket;

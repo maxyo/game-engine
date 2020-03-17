@@ -1,21 +1,15 @@
 import {WebsocketServer} from "./network/transport/server/websocket-server";
-import {IServerConfig} from "websocket";
 import {Transport} from "./network/transport/transport";
 import {Manager} from "./manager/manager";
 import {NetworkService} from "./network/network-service";
-import {SyncManager} from "./scene/atom/game-object/game-object";
 import {Scene} from "./scene/scene";
 import {WebsocketClient} from "./network/transport/client/websocket-client";
-import {Updatable} from "./scene/atom/interfaces/updatable";
-import {ManagerWithCommands} from "./manager/manager-types";
-import {HtmlRenderManager} from "./manager/html-render-manager";
 import {SceneLoader} from "./scene/scene-loader";
-import {encode} from "msgpack";
-import {SomeObject} from "./scene/atom/game-object/some-object";
 import {sleep} from "./util/functions";
 import {INetworkManager, isNetworkManager, isUpdatableManager, IUpdatableManager} from "./manager/manager-types";
-import {IUpdatable} from "./scene/atom/interfaces/IUpdatable";
-import {RenderManager} from "./manager/html-render-manager";
+import {AtomSyncManager} from "./manager/atom-sync-manager";
+import {HtmlRenderManager} from "./manager/html-render-manager";
+import {IServerConfig} from "websocket";
 
 export class Game {
     /**
@@ -35,8 +29,6 @@ export class Game {
 
     private readonly networkService: NetworkService;
     private readonly transport: Transport;
-
-    private state: GameState = GameState.Preparing;
 
     private scene: Scene;
 
@@ -67,13 +59,13 @@ export class Game {
 
     private initManagers() {
 
-        if (this.mode === GameMode.Server) {
+        if (this.gameMode === GameMode.Server) {
             this.allManagers = [
-                new SyncManager(this),
+                new AtomSyncManager(this),
             ];
         } else {
             this.allManagers = [
-                new RenderManager(this)
+                new HtmlRenderManager(this)
             ];
         }
 

@@ -2,7 +2,6 @@ import {Vector} from '../vector';
 import {Tile} from "./atom/tile/tile";
 import {GameObject} from "./atom/game-object/game-object";
 import {Atom} from "./atom/atom";
-import {isUpdatable, IUpdatable} from "./atom/interfaces/IUpdatable";
 import {EventSource} from "../event/event-source";
 
 export class Scene extends EventSource {
@@ -10,6 +9,13 @@ export class Scene extends EventSource {
     private tiles: Tile[];
     private size: Vector;
 
+    public getObjects(): GameObject[] {
+        return this.objects;
+    }
+
+    public getTiles(): Tile[] {
+        return this.tiles;
+    }
 
     public attach(atom: Atom) {
         if (atom instanceof GameObject) {
