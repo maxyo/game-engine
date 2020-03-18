@@ -3,7 +3,7 @@ import {isUpdatable} from "../scene/atom/interfaces/IUpdatable";
 import {CreateAtomCommand} from "../network/commands/create-atom-command";
 import {SyncAtomCommand} from "../network/commands/sync-atom-command";
 import {Game} from "../game";
-import {Command} from "../network/commands/command";
+import {Command} from "../network/command";
 import {GameObject} from "../scene/atom/game-object/game-object";
 import {Atom} from "../scene/atom/atom";
 import {DeleteAtomCommand} from "../network/commands/delete-atom-command";

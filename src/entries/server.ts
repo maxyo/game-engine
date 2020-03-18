@@ -1,5 +1,7 @@
 import {createServer} from "http";
 import {Game, GameMode, IGameConfig} from "../core/game";
+import {GameObject} from "../core/scene/atom/game-object/game-object";
+import {RenderComponent} from "../core/component/render-component";
 
 let args = {};
 
@@ -16,4 +18,12 @@ let config: IGameConfig = {
 };
 
 let game = new Game(config);
+
+let obj: GameObject = new GameObject();
+setTimeout(() => {
+    obj.addComponent(RenderComponent);
+    game.getScene().attach(obj);
+}, 1000);
+
+
 game.start();

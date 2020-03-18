@@ -1,16 +1,11 @@
-import {Command} from "./command";
+import {Command} from "../command";
+import { Game } from "src/core/game";
 
 export class ActionCommand extends Command {
-    constructor(action: string, target: string) {
-        super();
-        this.action = action;
-        this.target = target;
-    }
-
     action: string;
     target: string;
 
-    execute() {
+    execute(game: Game) {
     }
 
 }

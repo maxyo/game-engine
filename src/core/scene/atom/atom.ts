@@ -1,14 +1,15 @@
 import {SpriteResource} from '../../resources/sprite-resource';
 import {sync, Transportable} from '../../network/transport/transportable';
 import {Component} from "../../component/component";
-import {Vector} from 'src/core/vector';
+import {Vector} from '../../vector';
 
 let LATEST_ID = 0;
 
 /**
  * Базовый игровой объект
  */
-export abstract class Atom extends Transportable {
+
+export abstract class Atom extends Transportable{
     @sync id: number;
 
     @sync name: string;
@@ -39,6 +40,10 @@ export abstract class Atom extends Transportable {
     }
 
     protected onDestroy() {
+    }
+
+    public addComponent(type) {
+        this.components.push(new type(this));
     }
 
     public getComponent(type: typeof Component) {

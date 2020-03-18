@@ -1,4 +1,4 @@
-import {Command} from "../network/commands/command";
+import {Command} from "../network/command";
 
 export interface INetworkManager {
     flushCommands(): Command[] | null;

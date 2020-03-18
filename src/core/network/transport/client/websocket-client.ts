@@ -1,19 +1,20 @@
 import {Transport} from "../transport";
 import * as io from "socket.io-client";
 import {Client} from "../../client/client";
-import {Command} from "../../commands/command";
+import {Command} from "../../command";
 import {Socket} from "socket.io";
+import {Game} from "src/core/game";
 
 export class WebsocketClient extends Transport {
     socket: Socket;
 
-    constructor(server: string, port: string) {
-        super();
+    constructor(game: Game, server: string, port: string) {
+        super(game);
 
         this.socket = io(server + ':' + port);
 
         this.socket.on('data', (data) => {
-            this.handleCommand(data as Command)
+            this.handleCommand(this.unpackCommands(data))
         })
     }
 
@@ -29,7 +30,9 @@ export class WebsocketClient extends Transport {
         this.socket.send(data);
     }
 
-    handleCommand(command: Command) {
-        console.log(command);
+    handleCommand(commands: Command[]) {
+        for (let command of commands) {
+            command.execute(this.game);
+        }
     }
 }

@@ -1,4 +1,4 @@
-import {Command} from "./commands/command";
+import {Command} from "./command";
 import {Transport} from "./transport/transport";
 
 export class NetworkService {

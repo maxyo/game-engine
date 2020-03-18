@@ -1,7 +1,3 @@
-/**
- * Интерфейс
- */
-
 export abstract class Transportable {
     private static fields = [];
 
@@ -9,28 +5,53 @@ export abstract class Transportable {
         if (!fields) {
             fields = Object.getPrototypeOf(this).fields;
         }
-        let result = [];
-        for (let field in fields) {
-            result.push(this[field]);
+        let result = {};
+        for (let field of fields) {
+            result[field] = this.toPrimitiveField(field);
         }
-        result['type'] = this.constructor.name;
+        result['__type__'] = this.constructor.name;
 
+        console.log(result);
         return result;
+    }
+
+    protected toPrimitiveField(fieldName): any {
+        return this.toPrimitive(this[fieldName]);
+    }
+
+    private toPrimitive(field) {
+        if (field instanceof Transportable) {
+            return field.toArray();
+        } else if (field instanceof Array) {
+            return field.map(val => this.toPrimitive(val));
+        } else {
+            return field;
+        }
     }
 
     public needToSync() {
         return true;
     }
 
-    static sync(target: Transportable, property) {
-        if (!Object.getPrototypeOf(target).fields) {
-            Object.getPrototypeOf(target).fields = [];
+    public static parse(data: Array<any>) {
+
+    }
+
+    static sync(target, property) {
+        if (!target.fields) {
+            target.fields = [];
         }
-        Object.getPrototypeOf(target).fields.push(property);
+        target.fields.push(property);
     }
 }
 
+export const CONSTRUCTORS: Map<string, Function> = new Map<string, Function>();
+
 // Алиас для Transportable.sync
-export function sync(target: Transportable, property) {
+export function sync(target, property) {
     Transportable.sync(target, property);
+}
+
+export function transportable(constructor: Function) {
+    CONSTRUCTORS.set(constructor.name, constructor);
 }

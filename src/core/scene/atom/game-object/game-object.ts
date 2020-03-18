@@ -1,8 +1,9 @@
 import {Atom} from "../atom";
-import {sync} from "../../../network/transport/transportable";
-import {Vector} from "../../../vector";
+import {sync, transportable} from "../../../network/transport/transportable";
+import { Vector } from "../../../vector";
 
-export class GameObject extends Atom {
+@transportable
+export class GameObject extends Atom{
 
     @sync
     scale: Vector = new Vector;

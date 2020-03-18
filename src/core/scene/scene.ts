@@ -5,8 +5,8 @@ import {Atom} from "./atom/atom";
 import {EventSource} from "../event/event-source";
 
 export class Scene extends EventSource {
-    private objects: GameObject[];
-    private tiles: Tile[];
+    private objects: GameObject[] = [];
+    private tiles: Tile[] = [];
     private size: Vector;
 
     public getObjects(): GameObject[] {

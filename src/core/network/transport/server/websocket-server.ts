@@ -3,14 +3,15 @@ import {Transport} from "../transport";
 import {Client} from "../../client/client";
 import * as socketio from 'socket.io'
 import {Server, Socket} from 'socket.io'
-import {Command} from "../../commands/command";
+import {Command} from "../../command";
+import {Game} from "../../../game";
 
 export class WebsocketServer extends Transport {
     clientsCollection: ClientCollection = new ClientCollection();
     server: Server;
 
-    constructor(config: IServerConfig) {
-        super();
+    constructor(game: Game, config: IServerConfig) {
+        super(game);
         this.server = socketio(config.httpServer, {
             path: '/',
             serveClient: false,
@@ -24,9 +25,9 @@ export class WebsocketServer extends Transport {
         console.log('Start Listening');
     }
 
-    broadcast(data: Command | [Command]) {
+    broadcast(data: [Command]) {
         for (let clientId in this.clientsCollection.sockets) {
-            this.clientsCollection.sockets[clientId].emit('data', data);
+            this.clientsCollection.sockets[clientId].emit('data', this.packCommands(data));
         }
     }
 

@@ -10,6 +10,7 @@ import {INetworkManager, isNetworkManager, isUpdatableManager, IUpdatableManager
 import {AtomSyncManager} from "./manager/atom-sync-manager";
 import {HtmlRenderManager} from "./manager/html-render-manager";
 import {IServerConfig} from "websocket";
+import {GameObject} from "./scene/atom/game-object/game-object";
 
 export class Game {
     /**
@@ -30,7 +31,7 @@ export class Game {
     private readonly networkService: NetworkService;
     private readonly transport: Transport;
 
-    private scene: Scene;
+    private scene: Scene = new Scene();
 
     public readonly gameMode: GameMode;
 
@@ -40,10 +41,10 @@ export class Game {
         this.initManagers();
 
         if (this.gameMode === GameMode.Server) {
-            this.transport = new WebsocketServer(config.serverConfig);
-            this.scene = SceneLoader.load(config.scenePath);
+            this.transport = new WebsocketServer(this, config.serverConfig);
+            // this.scene = SceneLoader.load(config.scenePath);
         } else {
-            this.transport = new WebsocketClient(config.serverAddress, config.port);
+            this.transport = new WebsocketClient(this, config.serverAddress, config.port);
         }
         this.networkService = new NetworkService(this.transport);
     }

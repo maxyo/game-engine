@@ -8,7 +8,7 @@ import {Tile} from "../scene/atom/tile/tile";
 export class HtmlRenderManager extends Manager {
     private frame: HTMLElement;
 
-    private items: RenderComponent[];
+    private items: RenderComponent[] = [];
 
     constructor(game: Game) {
         super(game);
@@ -16,9 +16,10 @@ export class HtmlRenderManager extends Manager {
         this.frame.style.width = '100vw';
         this.frame.style.height = '100vh';
         this.frame.style.position = 'relative';
+        this.frame.style.transition = 'all 1s';
 
-        this.game.getScene().attachEventListener('attached', (event) => this.onSceneAtomAttached(event.data));
-        this.game.getScene().attachEventListener('detached', (event) => this.onSceneAtomDetached(event.data));
+        this.game.getScene().attachEventListener('attached', (event) => this.onSceneAtomAttached(event.data[0]));
+        this.game.getScene().attachEventListener('detached', (event) => this.onSceneAtomDetached(event.data[0]));
 
         this.game.getScene().getObjects().forEach((obj: GameObject) => {
             this.onSceneAtomAttached(obj)
@@ -57,11 +58,10 @@ export class HtmlRenderManager extends Manager {
         let component = atom.getComponent(RenderComponent);
         if (component) {
             this.attach(component);
+            component.attachEventListener('destroy', (event) => {
+                this.detach(event.target as RenderComponent)
+            });
         }
-
-        component.attachEventListener('destroy', (event) => {
-            this.detach(event.target as RenderComponent)
-        });
     }
 
     onSceneAtomDetached(atom: Atom) {

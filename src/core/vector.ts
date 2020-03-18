@@ -1,8 +1,12 @@
-export class Vector {
-    private _X: number;
-    private _Y: number;
+import {sync, Transportable, transportable} from "./network/transport/transportable";
+
+@transportable
+export class Vector extends Transportable {
+    @sync private _X: number;
+    @sync private _Y: number;
 
     public constructor(x: number = 0, y: number = 0) {
+        super();
         this._X = x;
         this._Y = y;
     }
