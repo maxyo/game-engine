@@ -4,13 +4,12 @@ import {Manager} from "./manager/manager";
 import {NetworkService} from "./network/network-service";
 import {Scene} from "./scene/scene";
 import {WebsocketClient} from "./network/transport/client/websocket-client";
-import {SceneLoader} from "./scene/scene-loader";
 import {sleep} from "./util/functions";
 import {INetworkManager, isNetworkManager, isUpdatableManager, IUpdatableManager} from "./manager/manager-types";
 import {AtomSyncManager} from "./manager/atom-sync-manager";
 import {HtmlRenderManager} from "./manager/html-render-manager";
 import {IServerConfig} from "websocket";
-import {GameObject} from "./scene/atom/game-object/game-object";
+import {LogicManager} from "./manager/logic-manager";
 
 export class Game {
     /**
@@ -34,6 +33,7 @@ export class Game {
     private scene: Scene = new Scene();
 
     public readonly gameMode: GameMode;
+
 
     constructor(config: IGameConfig) {
         this.gameMode = config.mode;
@@ -63,10 +63,12 @@ export class Game {
         if (this.gameMode === GameMode.Server) {
             this.allManagers = [
                 new AtomSyncManager(this),
+                new LogicManager(this),
             ];
         } else {
             this.allManagers = [
-                new HtmlRenderManager(this)
+                new HtmlRenderManager(this),
+                // new LogicManager(this),
             ];
         }
 

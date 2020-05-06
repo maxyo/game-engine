@@ -1,7 +1,7 @@
 import {Event} from "./event";
 
-export abstract class EventSource {
-    private eventHandlers: { [key: string]: ((Event) => void)[] } = {};
+export class EventSourceTrait {
+    private _eventHandlers: { [key: string]: ((Event) => void)[] };
 
     public attachEventListener(
         event: string,
@@ -26,5 +26,13 @@ export abstract class EventSource {
         this.eventHandlers[event].forEach((handler) => {
             handler(eventObj);
         });
+    }
+
+    private get eventHandlers() {
+        if (!this._eventHandlers) {
+            this._eventHandlers = {};
+        }
+
+        return this._eventHandlers;
     }
 }

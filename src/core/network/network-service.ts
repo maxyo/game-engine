@@ -19,7 +19,6 @@ export class NetworkService {
         if (!this.commands.length) {
             return;
         }
-
         this.transport.broadcast(this.commands);
         this.commands = [];
     }

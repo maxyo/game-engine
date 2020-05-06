@@ -1,7 +1,8 @@
 import {Atom} from "../atom";
-import {transportable} from "../../../network/transport/transportable";
+import {Serializable} from "../../../network/transport/serializable";
+import {registerClass} from "../../../network/transport/serializer";
 
-@transportable
+@registerClass
 export class Tile extends Atom {
 
 }

@@ -1,29 +1,37 @@
-import {SpriteResource} from '../../resources/sprite-resource';
-import {sync, Transportable} from '../../network/transport/transportable';
+import {Serializable} from '../../network/transport/serializable';
 import {Component} from "../../component/component";
 import {Vector} from '../../vector';
-
-let LATEST_ID = 0;
+import {useTrait} from "../../util/functions";
+import {EventSourceTrait} from "../../event/event-source-trait";
+import {registerClass} from "../../network/transport/serializer";
+import {NetworkType} from "../../network/transport/network-type";
 
 /**
  * Базовый игровой объект
  */
 
-export abstract class Atom extends Transportable{
-    @sync id: number;
+@registerClass
+export abstract class Atom extends Serializable {
+    @useTrait(EventSourceTrait)
 
-    @sync name: string;
-    @sync sprite: SpriteResource;
+    public name: string;
 
-    @sync position: Vector = new Vector;
+    public readonly position: Vector = new Vector;
 
-    @sync private components: Component[] = [];
+    public readonly components: Component[] = [];
+
+    static get netScheme() {
+        return {
+            ...super.netScheme,
+            name: {type: NetworkType.STRING},
+            position: {type: NetworkType.CLASSINSTANCE},
+            components: {type: NetworkType.LIST, itemType: NetworkType.CLASSINSTANCE}
+        };
+    };
 
     protected constructor(name = '') {
         super();
-        this.id = LATEST_ID++;
         this.name = name;
-        this.sprite = new SpriteResource();
     }
 
     public init() {
@@ -42,14 +50,16 @@ export abstract class Atom extends Transportable{
     protected onDestroy() {
     }
 
-    public addComponent(type) {
-        this.components.push(new type(this));
+    public addComponent<T extends Component>(type: { new(go: Atom): T; }): T {
+        let comp = new type(this);
+        this.components.push(comp);
+        return comp;
     }
 
-    public getComponent(type: typeof Component) {
+    public getComponent<T extends Component>(type: { new(go: Atom): T; }): T {
         for (let component of this.components) {
             if (component instanceof type) {
-                return component;
+                return component as T;
             }
         }
     }

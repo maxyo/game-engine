@@ -1,5 +1,5 @@
 import * as shortid from 'shortid';
-import {EventSource} from "../../event/event-source";
+import {EventSourceTrait} from "../../event/event-source-trait";
 import {Socket} from "socket.io";
 import {GetCommand} from "../commands/get-command";
 import {ActionCommand} from "../commands/action-command";
@@ -9,7 +9,7 @@ import {Interface} from "readline";
  * events:
  * - close
  */
-export class Client extends EventSource {
+export class Client extends EventSourceTrait {
     public readonly id: string;
     private readonly socket: Socket;
     private currentInterface: Interface;

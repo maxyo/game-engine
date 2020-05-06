@@ -4,6 +4,7 @@ import {Client} from "../../client/client";
 import {Command} from "../../command";
 import {Socket} from "socket.io";
 import {Game} from "src/core/game";
+import {CommandCollection} from "../../commands/command-collection";
 
 export class WebsocketClient extends Transport {
     socket: Socket;
@@ -14,7 +15,7 @@ export class WebsocketClient extends Transport {
         this.socket = io(server + ':' + port);
 
         this.socket.on('data', (data) => {
-            this.handleCommand(this.unpackCommands(data))
+            this.handleCommands(this.unpackCommands(data));
         })
     }
 
@@ -30,9 +31,7 @@ export class WebsocketClient extends Transport {
         this.socket.send(data);
     }
 
-    handleCommand(commands: Command[]) {
-        for (let command of commands) {
-            command.execute(this.game);
-        }
+    handleCommands(commands: CommandCollection) {
+        commands.execute(this.game, this.serializer);
     }
 }

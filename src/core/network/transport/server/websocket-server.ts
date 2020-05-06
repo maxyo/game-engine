@@ -25,7 +25,7 @@ export class WebsocketServer extends Transport {
         console.log('Start Listening');
     }
 
-    broadcast(data: [Command]) {
+    broadcast(data: Command[]) {
         for (let clientId in this.clientsCollection.sockets) {
             this.clientsCollection.sockets[clientId].emit('data', this.packCommands(data));
         }
@@ -36,7 +36,7 @@ export class WebsocketServer extends Transport {
     }
 
     send(client: Client, data: Command) {
-        this.clientsCollection.getSocket(client.id).write(data.serialize());
+        this.clientsCollection.getSocket(client.id).write(data.serialize(this.serializer, {}));
     }
 
     onConnection(socket: Socket) {

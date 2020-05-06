@@ -1,12 +1,20 @@
-import {sync, Transportable, transportable} from "./network/transport/transportable";
+import {Serializable} from "./network/transport/serializable";
+import {useTrait} from "./util/functions";
+import {registerClass} from "./network/transport/serializer";
+import {NetworkType} from "./network/transport/network-type";
 
-@transportable
-export class Vector extends Transportable {
-    @sync private _X: number;
-    @sync private _Y: number;
+@registerClass
+export class Vector {
+    @useTrait(Serializable) this;
+    private _X: number;
+    private _Y: number;
+
+    static netScheme = {
+        _X: {type:NetworkType.FLOAT32},
+        _Y: {type:NetworkType.FLOAT32}
+    };
 
     public constructor(x: number = 0, y: number = 0) {
-        super();
         this._X = x;
         this._Y = y;
     }

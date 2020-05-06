@@ -28,23 +28,21 @@ export class AtomSyncManager extends Manager {
 
     public update(tpf: number) {
         for (let atom of this.atoms) {
-            if (atom.needToSync()) {
-                this.syncCommand.objects.push(atom);
-            }
+            this.syncCommand.objects.push(atom);
         }
     }
 
     flushCommands(): Command[] | null {
         let result = [];
 
-        if (this.syncCommand.objects.length) {
-            result.push(this.syncCommand);
-            this.syncCommand = new SyncAtomCommand();
-        }
-
         if (this.createCommand.objects.length) {
             result.push(this.createCommand);
             this.createCommand = new CreateAtomCommand();
+        }
+
+        if (this.syncCommand.objects.length) {
+            result.push(this.syncCommand);
+            this.syncCommand = new SyncAtomCommand();
         }
 
         if (this.deleteCommand.objects.length) {
@@ -58,18 +56,20 @@ export class AtomSyncManager extends Manager {
         return null;
     }
 
-    private onSceneAtomAttached(atom) {
-        if (isUpdatable(atom)) {
+    private onSceneAtomAttached(atoms) {
+        atoms.forEach((atom) => {
             this.atoms.push(atom);
-        }
-        this.createCommand.objects.push(atom);
+            this.createCommand.objects.push(atom);
+        })
     }
 
-    private onSceneAtomDetached(atom) {
-        let i = this.atoms.indexOf(atom);
-        if (i !== -1) {
-            this.atoms.slice(i, 1);
-        }
-        this.deleteCommand.objects.push(atom);
+    private onSceneAtomDetached(atoms) {
+        atoms.forEach((atom) => {
+            let i = this.atoms.indexOf(atom);
+            if (i !== -1) {
+                this.atoms.slice(i, 1);
+            }
+            this.deleteCommand.objects.push(atom);
+        })
     }
 }

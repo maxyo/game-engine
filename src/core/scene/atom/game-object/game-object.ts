@@ -1,21 +1,24 @@
 import {Atom} from "../atom";
-import {sync, transportable} from "../../../network/transport/transportable";
-import { Vector } from "../../../vector";
+import {Vector} from "../../../vector";
+import {NetworkType} from "../../../network/transport/network-type";
+import {registerClass} from "../../../network/transport/serializer";
 
-@transportable
-export class GameObject extends Atom{
+@registerClass
+export class GameObject extends Atom {
 
-    @sync
-    scale: Vector = new Vector;
-    @sync
-    rotation: Vector = new Vector;
+    public readonly scale: Vector = new Vector;
+    public readonly rotation: Vector = new Vector;
 
-    constructor(name?: string) {
-        super(name);
+    static get netScheme() {
+        return {
+            ...super.netScheme,
+            scale: {type: NetworkType.CLASSINSTANCE},
+            rotation: {type: NetworkType.CLASSINSTANCE},
+        };
+    };
+
+    public constructor() {
+        super();
+        this.init();
     }
-
-    public destroy() {
-        super.destroy();
-    }
-
 }

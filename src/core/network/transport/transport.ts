@@ -1,16 +1,21 @@
 import {Client} from "../client/client";
 import {Command} from "../command";
-import {EventSource} from "../../event/event-source";
+import {EventSourceTrait} from "../../event/event-source-trait";
 import {Game} from "../../game";
+import Serializer from "./serializer";
+import {CommandCollection} from "../commands/command-collection";
 
 /**
  * Класс реализующий отправку данных (Transportable) клиенту и получение действий от клиента.
  */
-export abstract class Transport extends EventSource {
+export abstract class Transport extends EventSourceTrait {
     protected game: Game;
+    protected readonly serializer: Serializer;
 
     constructor(game: Game) {
         super();
+        this.serializer = new Serializer();
+        this.serializer.loadClasses();
         this.game = game;
     }
 
@@ -21,21 +26,10 @@ export abstract class Transport extends EventSource {
     abstract emit(event: string, data: any);
 
     protected packCommands(data: Command[]) {
-        let result = [];
-        for (let command of data) {
-            result.push(command.serialize());
-        }
-        return JSON.stringify(result);
+        return new CommandCollection(data).serialize(this.serializer).dataBuffer;
     }
 
-    protected unpackCommands(data: string) {
-        let parsed = JSON.parse(data);
-        let result = [];
-        for (let command of parsed) {
-            console.log(command);
-            result.push(Command.unserialize(command));
-        }
-        console.log(result);
-        return result;
+    protected unpackCommands(buffer): CommandCollection {
+        return this.serializer.deserialize(buffer).obj as CommandCollection;
     }
 }
