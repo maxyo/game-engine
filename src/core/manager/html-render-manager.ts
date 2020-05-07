@@ -17,6 +17,7 @@ export class HtmlRenderManager extends Manager {
         this.frame.style.height = '100vh';
         this.frame.style.position = 'relative';
         this.frame.style.transition = 'all 1s';
+        this.frame.style.overflow = 'hidden';
 
         this.game.getScene().attachEventListener('attached', (event) => this.onSceneAtomAttached(event.data[0]));
         this.game.getScene().attachEventListener('detached', (event) => this.onSceneAtomDetached(event.data[0]));
@@ -43,7 +44,7 @@ export class HtmlRenderManager extends Manager {
             newElement.style.position = 'absolute';
             newElement.style.width = '10px';
             newElement.style.height = '10px';
-            newElement.style.background = 'blue';
+            newElement.style.background = comp.color;
             newElement.style.left = comp.go.position.x + "px";
             newElement.style.top = comp.go.position.y + "px";
 

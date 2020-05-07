@@ -1,5 +1,4 @@
 import {Manager} from "./manager";
-import {isUpdatable} from "../scene/atom/interfaces/IUpdatable";
 import {CreateAtomCommand} from "../network/commands/create-atom-command";
 import {SyncAtomCommand} from "../network/commands/sync-atom-command";
 import {Game} from "../game";
@@ -13,6 +12,8 @@ export class AtomSyncManager extends Manager {
     private createCommand: CreateAtomCommand = new CreateAtomCommand;
     private deleteCommand: DeleteAtomCommand = new DeleteAtomCommand;
     private syncCommand: SyncAtomCommand = new SyncAtomCommand;
+    private tick_to_update = 1;
+    private tick_count = 0;
 
     atoms: Array<Atom> = [];
 
@@ -27,8 +28,12 @@ export class AtomSyncManager extends Manager {
     }
 
     public update(tpf: number) {
-        for (let atom of this.atoms) {
-            this.syncCommand.objects.push(atom);
+        this.tick_count++;
+        if (this.tick_count > this.tick_to_update) {
+            this.tick_count = 0;
+            for (let atom of this.atoms) {
+                this.syncCommand.objects.push(atom);
+            }
         }
     }
 
@@ -47,7 +52,7 @@ export class AtomSyncManager extends Manager {
 
         if (this.deleteCommand.objects.length) {
             result.push(this.deleteCommand);
-            this.deleteCommand = new CreateAtomCommand();
+            this.deleteCommand = new DeleteAtomCommand();
         }
 
         if (result.length) {

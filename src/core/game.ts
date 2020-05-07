@@ -34,11 +34,14 @@ export class Game {
 
     public readonly gameMode: GameMode;
 
+    public static instance: Game;
 
     constructor(config: IGameConfig) {
         this.gameMode = config.mode;
 
         this.initManagers();
+
+        Game.instance = this;
 
         if (this.gameMode === GameMode.Server) {
             this.transport = new WebsocketServer(this, config.serverConfig);
@@ -68,7 +71,7 @@ export class Game {
         } else {
             this.allManagers = [
                 new HtmlRenderManager(this),
-                // new LogicManager(this),
+                new LogicManager(this),
             ];
         }
 
