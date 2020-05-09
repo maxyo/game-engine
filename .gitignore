@@ -1,2 +1,6 @@
 /node_modules/
-/.idea
+/.idea/
+/src/**/*.js
+/**/*.map
+/dist
+/tests/**/*.js

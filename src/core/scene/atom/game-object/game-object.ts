@@ -1,23 +1,19 @@
 import {Atom} from "../atom";
-import {sync} from "../../../network/transport/transportable";
-import {Transform} from "../../../transform";
-import {Manager} from "../../../manager/manager";
-import {IUpdatable} from "../interfaces/IUpdatable";
-import {CreateAtomCommand} from "../../../network/commands/create-atom-command";
-import {SyncAtomCommand} from "../../../network/commands/sync-atom-command";
-import {Command} from "../../../network/commands/command";
-import {Game} from "../../../game";
+import {Vector} from "../../../vector";
+import {NetworkType} from "../../../network/transport/network-type";
+import {registerClass} from "../../../network/transport/serializer";
 
+@registerClass
 export class GameObject extends Atom {
-    @sync transform: Transform;
 
-    constructor(name?: string) {
-        super(name);
-        this.transform = new Transform();
-    }
+    public readonly scale: Vector = new Vector;
+    public readonly rotation: Vector = new Vector;
 
-    public destroy() {
-        super.destroy();
-    }
-
+    static get netScheme() {
+        return {
+            ...super.netScheme,
+            scale: {type: NetworkType.CLASSINSTANCE},
+            rotation: {type: NetworkType.CLASSINSTANCE},
+        };
+    };
 }

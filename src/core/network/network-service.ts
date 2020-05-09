@@ -1,6 +1,5 @@
-import {Command} from "./commands/command";
+import {Command} from "./command";
 import {Transport} from "./transport/transport";
-import * as msgpack from "msgpack";
 
 export class NetworkService {
     private commands: Command[] = [];
@@ -20,8 +19,7 @@ export class NetworkService {
         if (!this.commands.length) {
             return;
         }
-
-        this.transport.broadcast(msgpack.encode(this.commands));
+        this.transport.broadcast(this.commands);
         this.commands = [];
     }
 }

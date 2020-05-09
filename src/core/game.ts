@@ -1,14 +1,23 @@
-import {WebsocketTransport} from "./network/transport/websocket-transport";
-import {IServerConfig} from "websocket";
+import {ServerTransport} from "./network/transport/server/server-transport";
 import {Transport} from "./network/transport/transport";
 import {Manager} from "./manager/manager";
 import {NetworkService} from "./network/network-service";
-import {SyncManager} from "./scene/atom/game-object/game-object";
 import {Scene} from "./scene/scene";
+import {ClientTransport} from "./network/transport/client/client-transport";
 import {sleep} from "./util/functions";
-import {INetworkManager, isNetworkManager, isUpdatableManager, IUpdatableManager} from "./manager/manager-types";
-import {IUpdatable} from "./scene/atom/interfaces/IUpdatable";
-import {RenderManager} from "./manager/html-render-manager";
+import {
+    INetworkManager,
+    ISelectiveNetworkManager,
+    isNetworkManager,
+    isSelectiveNetworkManager,
+    isUpdatableManager,
+    IUpdatableManager
+} from "./manager/manager-types";
+import {AtomSyncManager} from "./manager/atom-sync-manager";
+import {HtmlRenderManager} from "./manager/html-render-manager";
+import {IServerConfig} from "websocket";
+import {LogicManager} from "./manager/logic-manager";
+import {HtmlInputManager} from "./manager/html-input-manager";
 
 export class Game {
     /**
@@ -18,29 +27,36 @@ export class Game {
      *
      */
 
-    private name: string;
-
     private allManagers: Manager[] = [];
     private networkManagers: Array<Manager & INetworkManager> = [];
+    private selectiveNetworkManagers: Array<Manager & ISelectiveNetworkManager> = [];
     private updatableManagers: Array<Manager & IUpdatableManager> = [];
 
     private state: GameState = GameState.Preparing;
 
     private readonly networkService: NetworkService;
+    public readonly transport: Transport;
 
-    private readonly transport: Transport;
+    private scene: Scene = new Scene();
 
-    private stopping: boolean;
+    public readonly gameMode: GameMode;
 
-    private mode: GameMode;
-
-    public scene: Scene;
-
+    public static instance: Game;
 
     constructor(config: IGameConfig) {
+        this.gameMode = config.mode;
+
         this.initManagers();
 
-        this.transport = new WebsocketTransport(config.serverConfig);
+        Game.instance = this;
+
+        if (this.gameMode === GameMode.Server) {
+            this.transport = new ServerTransport(this, config.serverConfig);
+            this.processNetwork = this.processServerNetwork;
+        } else {
+            this.transport = new ClientTransport(this, config.serverAddress, config.port);
+            this.processNetwork = this.processClientNetwork;
+        }
         this.networkService = new NetworkService(this.transport);
     }
 
@@ -49,21 +65,31 @@ export class Game {
         this.loop();
     }
 
+    public getScene(): Scene {
+        return this.scene;
+    }
+
     private initManagers() {
 
-        if (this.mode === GameMode.Server) {
+        if (this.gameMode === GameMode.Server) {
             this.allManagers = [
-                new SyncManager(this),
+                new AtomSyncManager(this),
+                new LogicManager(this),
             ];
         } else {
             this.allManagers = [
-                new RenderManager(this)
+                new HtmlRenderManager(this),
+                new LogicManager(this),
+                new HtmlInputManager(this),
             ];
         }
 
         for (let manager of this.allManagers) {
             if (isNetworkManager(manager)) {
                 this.networkManagers.push(manager as Manager & INetworkManager);
+            }
+            if (isSelectiveNetworkManager(manager)) {
+                this.selectiveNetworkManagers.push(manager as Manager & ISelectiveNetworkManager);
             }
             if (isUpdatableManager(manager)) {
                 this.updatableManagers.push(manager as Manager & IUpdatableManager);
@@ -98,9 +124,24 @@ export class Game {
         }
     }
 
-    private processNetwork() {
+    private processNetwork(): void {
+    }
+
+    private processServerNetwork(): void {
         for (let manager of this.networkManagers) {
-            this.networkService.pushCommands(manager.flushCommands());
+            this.networkService.pushCommands(manager.getCommands());
+        }
+        for (let manager of this.selectiveNetworkManagers) {
+            for (let client of Object.values((this.transport as ServerTransport).clientsCollection.clients)) {
+                this.networkService.pushCommands(manager.getCommandsForClient(client));
+            }
+        }
+        this.networkService.transmit();
+    }
+
+    private processClientNetwork(): void {
+        for (let manager of this.networkManagers) {
+            this.networkService.pushCommands(manager.getCommands());
         }
         this.networkService.transmit();
     }
@@ -116,7 +157,6 @@ export class Game {
     }
 
     private processRender() {
-
     }
 
     private loadScene(scene: Scene) {
@@ -134,7 +174,7 @@ export interface IGameConfig {
     scenePath?: string,             // if mode==Server
 
     serverAddress?: string,         // if mode==Client
-    port?: number                   // if mode==Client
+    port?: string                   // if mode==Client
 }
 
 export enum GameMode {

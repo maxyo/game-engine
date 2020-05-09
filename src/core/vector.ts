@@ -1,6 +1,18 @@
+import {Serializable} from "./network/transport/serializable";
+import {useTrait} from "./util/functions";
+import {registerClass} from "./network/transport/serializer";
+import {NetworkType} from "./network/transport/network-type";
+
+@registerClass
 export class Vector {
+    @useTrait(Serializable) this;
     private _X: number;
     private _Y: number;
+
+    static netScheme = {
+        _X: {type:NetworkType.FLOAT32},
+        _Y: {type:NetworkType.FLOAT32}
+    };
 
     public constructor(x: number = 0, y: number = 0) {
         this._X = x;
@@ -25,11 +37,11 @@ export class Vector {
 
     public add(value: Vector | number): Vector {
         if (value instanceof Vector) {
-            this._X *= value.x;
-            this._Y *= value.y;
+            this._X += value.x;
+            this._Y += value.y;
         } else {
-            this._X *= value;
-            this._Y *= value;
+            this._X += value;
+            this._Y += value;
         }
         return this;
     }

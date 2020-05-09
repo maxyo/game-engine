@@ -2,21 +2,33 @@ import {Vector} from '../vector';
 import {Tile} from "./atom/tile/tile";
 import {GameObject} from "./atom/game-object/game-object";
 import {Atom} from "./atom/atom";
-import {isUpdatable, IUpdatable} from "./atom/interfaces/IUpdatable";
-import {EventSource} from "../event/event-source";
+import {EventSourceTrait} from "../event/event-source-trait";
+import {useTrait} from "../util/functions";
 
-export class Scene extends EventSource {
-    private objects: GameObject[];
-    private tiles: Tile[];
+export interface Scene extends EventSourceTrait {
+
+}
+
+export class Scene {
+    @useTrait(EventSourceTrait)
+    private objects: GameObject[] = [];
+    private tiles: Tile[] = [];
     private size: Vector;
 
+    public getObjects(): GameObject[] {
+        return this.objects;
+    }
+
+    public getTiles(): Tile[] {
+        return this.tiles;
+    }
 
     public attach(atom: Atom) {
         if (atom instanceof GameObject) {
-            this.objects.push(atom);
+            this.objects.push(atom as GameObject);
         }
         if (atom instanceof Tile) {
-            this.tiles.push(atom);
+            this.tiles.push(atom as Tile);
         }
         this.trigger('attached', atom);
     }

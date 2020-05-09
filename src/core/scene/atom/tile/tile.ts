@@ -1,6 +1,8 @@
 import {Atom} from "../atom";
-import {Vector} from "../../../vector";
+import {Serializable} from "../../../network/transport/serializable";
+import {registerClass} from "../../../network/transport/serializer";
 
+@registerClass
 export class Tile extends Atom {
-    position: Vector;
+
 }

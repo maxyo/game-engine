@@ -1,5 +1,5 @@
-export abstract class IUpdatable {
-    public abstract update(tick_lag: number): void;
+export interface IUpdatable {
+    update(tick_lag: number): void;
 }
 
 export function isUpdatable(obj: any) {
