@@ -3,17 +3,11 @@ import {NetworkType} from "./network-type";
 import shortid = require("shortid");
 
 export class Serializable {
-    public readonly id;
-    static netScheme = {
-        id: {type: NetworkType.STRING}
-    };
+
+    static netScheme = {};
 
     public constructor(properties = {}) {
         Object.assign(this, properties);
-
-        if (!this.id) {
-            this.id = shortid();
-        }
     }
 
     /**
@@ -132,7 +126,7 @@ export class Serializable {
 
         // build a clone with pruned strings
         // @ts-ignore
-        let prunedCopy = new this.constructor(null, {id: null});
+        let prunedCopy = new this.constructor();
         for (let p of Object.keys(netScheme))
             prunedCopy[p] = changedStrings.indexOf(p) < 0 ? this[p] : null;
 

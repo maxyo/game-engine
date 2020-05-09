@@ -1,7 +1,12 @@
 import {Command} from "../network/command";
+import {Client} from "../network/client/client";
+
+export interface ISelectiveNetworkManager {
+    getCommandsForClient(client: Client): Command[] | null;
+}
 
 export interface INetworkManager {
-    flushCommands(): Command[] | null;
+    getCommands(): Command[] | null;
 }
 
 export interface IUpdatableManager {
@@ -9,7 +14,11 @@ export interface IUpdatableManager {
 }
 
 export function isNetworkManager(manager: any): boolean {
-    return manager.flushCommands !== undefined;
+    return manager.getCommands !== undefined;
+}
+
+export function isSelectiveNetworkManager(manager: any): boolean {
+    return manager.getCommandsForClient !== undefined;
 }
 
 export function isUpdatableManager(manager: any): boolean {

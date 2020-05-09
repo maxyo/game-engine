@@ -1,7 +1,6 @@
 import {Event} from "./event";
 
 export class EventSourceTrait {
-    private _eventHandlers: { [key: string]: ((Event) => void)[] };
 
     public attachEventListener(
         event: string,
@@ -28,11 +27,14 @@ export class EventSourceTrait {
         });
     }
 
-    private get eventHandlers() {
-        if (!this._eventHandlers) {
-            this._eventHandlers = {};
-        }
-
-        return this._eventHandlers;
+    protected get eventHandlers(): { [key: string]: ((Event) => void)[] } {
+        Reflect.deleteProperty(this, 'eventHandlers');
+        Reflect.defineProperty(this, 'eventHandlers', {
+            value: {},
+            writable: false,
+            configurable: false,
+            enumerable: false
+        });
+        return this.eventHandlers;
     }
 }

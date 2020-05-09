@@ -6,7 +6,7 @@ import {Server, Socket} from 'socket.io'
 import {Command} from "../../command";
 import {Game} from "../../../game";
 
-export class WebsocketServer extends Transport {
+export class ServerTransport extends Transport {
     clientsCollection: ClientCollection = new ClientCollection();
     server: Server;
 
@@ -26,9 +26,7 @@ export class WebsocketServer extends Transport {
     }
 
     broadcast(data: Command[]) {
-        for (let clientId in this.clientsCollection.sockets) {
-            this.clientsCollection.sockets[clientId].emit('data', this.packCommands(data));
-        }
+        this.server.emit('command', this.packCommands(data));
     }
 
     emit(event: string, data: any) {
@@ -39,11 +37,19 @@ export class WebsocketServer extends Transport {
         this.clientsCollection.getSocket(client.id).write(data.serialize(this.serializer, {}));
     }
 
+    onData(client: Client, data: Buffer) {
+        console.log(data[0]);
+        this.handleCommands(this.unpackCommands(data.buffer));
+    }
+
     onConnection(socket: Socket) {
-        let client = new Client(socket);
+        let client = new Client(socket, this.serializer);
         this.clientsCollection.add(client, socket);
         console.log('client connected (' + client.id + ')');
         this.trigger('connect', client);
+        socket.on('command', (data) => {
+            this.onData(client, data);
+        });
     }
 
     onClose(socket: Socket, reason: number, desc: string) {

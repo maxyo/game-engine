@@ -6,7 +6,7 @@ import {Socket} from "socket.io";
 import {Game} from "src/core/game";
 import {CommandCollection} from "../../commands/command-collection";
 
-export class WebsocketClient extends Transport {
+export class ClientTransport extends Transport {
     socket: Socket;
 
     constructor(game: Game, server: string, port: string) {
@@ -14,13 +14,14 @@ export class WebsocketClient extends Transport {
 
         this.socket = io(server + ':' + port);
 
-        this.socket.on('data', (data) => {
+        this.socket.on('command', (data) => {
             this.handleCommands(this.unpackCommands(data));
         })
     }
 
-    broadcast(buf) {
-        this.socket.send(buf);
+    broadcast(data: Command[]) {
+        console.log(this.packCommands(data));
+        this.socket.emit('command', this.packCommands(data));
     }
 
     emit(event: string, data: any) {
@@ -29,9 +30,5 @@ export class WebsocketClient extends Transport {
 
     send(client: Client, data: Command | [Command]) {
         this.socket.send(data);
-    }
-
-    handleCommands(commands: CommandCollection) {
-        commands.execute(this.game, this.serializer);
     }
 }

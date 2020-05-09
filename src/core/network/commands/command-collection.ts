@@ -10,7 +10,6 @@ export class CommandCollection extends Command {
 
     static get netScheme() {
         return {
-            ...super.netScheme,
             commands: {type: NetworkType.LIST, itemType: NetworkType.CLASSINSTANCE},
         }
     }

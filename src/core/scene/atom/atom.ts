@@ -5,6 +5,7 @@ import {useTrait} from "../../util/functions";
 import {EventSourceTrait} from "../../event/event-source-trait";
 import {registerClass} from "../../network/transport/serializer";
 import {NetworkType} from "../../network/transport/network-type";
+import shortid = require("shortid");
 
 /**
  * Базовый игровой объект
@@ -14,7 +15,8 @@ import {NetworkType} from "../../network/transport/network-type";
 export abstract class Atom extends Serializable {
     @useTrait(EventSourceTrait)
 
-    public name: string;
+    public readonly id;
+
 
     public readonly position: Vector = new Vector;
 
@@ -22,16 +24,20 @@ export abstract class Atom extends Serializable {
 
     static get netScheme() {
         return {
-            ...super.netScheme,
-            name: {type: NetworkType.STRING},
+            id: {type: NetworkType.STRING},
             position: {type: NetworkType.CLASSINSTANCE},
             components: {type: NetworkType.LIST, itemType: NetworkType.CLASSINSTANCE}
         };
     };
 
-    protected constructor(name = '') {
-        super();
-        this.name = name;
+    public constructor(properties = {}) {
+        super(properties);
+
+        if (!this.id) {
+            this.id = shortid();
+        }
+
+        this.init();
     }
 
     public init() {
@@ -40,8 +46,7 @@ export abstract class Atom extends Serializable {
 
     public destroy() {
         this.onDestroy();
-        // this.manager.detach(this);
-        // delete this;
+
     }
 
     protected onInit() {

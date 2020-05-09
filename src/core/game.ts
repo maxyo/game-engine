@@ -1,15 +1,23 @@
-import {WebsocketServer} from "./network/transport/server/websocket-server";
+import {ServerTransport} from "./network/transport/server/server-transport";
 import {Transport} from "./network/transport/transport";
 import {Manager} from "./manager/manager";
 import {NetworkService} from "./network/network-service";
 import {Scene} from "./scene/scene";
-import {WebsocketClient} from "./network/transport/client/websocket-client";
+import {ClientTransport} from "./network/transport/client/client-transport";
 import {sleep} from "./util/functions";
-import {INetworkManager, isNetworkManager, isUpdatableManager, IUpdatableManager} from "./manager/manager-types";
+import {
+    INetworkManager,
+    ISelectiveNetworkManager,
+    isNetworkManager,
+    isSelectiveNetworkManager,
+    isUpdatableManager,
+    IUpdatableManager
+} from "./manager/manager-types";
 import {AtomSyncManager} from "./manager/atom-sync-manager";
 import {HtmlRenderManager} from "./manager/html-render-manager";
 import {IServerConfig} from "websocket";
 import {LogicManager} from "./manager/logic-manager";
+import {HtmlInputManager} from "./manager/html-input-manager";
 
 export class Game {
     /**
@@ -19,16 +27,15 @@ export class Game {
      *
      */
 
-    private name: string;
-
     private allManagers: Manager[] = [];
     private networkManagers: Array<Manager & INetworkManager> = [];
+    private selectiveNetworkManagers: Array<Manager & ISelectiveNetworkManager> = [];
     private updatableManagers: Array<Manager & IUpdatableManager> = [];
 
     private state: GameState = GameState.Preparing;
 
     private readonly networkService: NetworkService;
-    private readonly transport: Transport;
+    public readonly transport: Transport;
 
     private scene: Scene = new Scene();
 
@@ -44,10 +51,11 @@ export class Game {
         Game.instance = this;
 
         if (this.gameMode === GameMode.Server) {
-            this.transport = new WebsocketServer(this, config.serverConfig);
-            // this.scene = SceneLoader.load(config.scenePath);
+            this.transport = new ServerTransport(this, config.serverConfig);
+            this.processNetwork = this.processServerNetwork;
         } else {
-            this.transport = new WebsocketClient(this, config.serverAddress, config.port);
+            this.transport = new ClientTransport(this, config.serverAddress, config.port);
+            this.processNetwork = this.processClientNetwork;
         }
         this.networkService = new NetworkService(this.transport);
     }
@@ -72,12 +80,16 @@ export class Game {
             this.allManagers = [
                 new HtmlRenderManager(this),
                 new LogicManager(this),
+                new HtmlInputManager(this),
             ];
         }
 
         for (let manager of this.allManagers) {
             if (isNetworkManager(manager)) {
                 this.networkManagers.push(manager as Manager & INetworkManager);
+            }
+            if (isSelectiveNetworkManager(manager)) {
+                this.selectiveNetworkManagers.push(manager as Manager & ISelectiveNetworkManager);
             }
             if (isUpdatableManager(manager)) {
                 this.updatableManagers.push(manager as Manager & IUpdatableManager);
@@ -112,9 +124,24 @@ export class Game {
         }
     }
 
-    private processNetwork() {
+    private processNetwork(): void {
+    }
+
+    private processServerNetwork(): void {
         for (let manager of this.networkManagers) {
-            this.networkService.pushCommands(manager.flushCommands());
+            this.networkService.pushCommands(manager.getCommands());
+        }
+        for (let manager of this.selectiveNetworkManagers) {
+            for (let client of Object.values((this.transport as ServerTransport).clientsCollection.clients)) {
+                this.networkService.pushCommands(manager.getCommandsForClient(client));
+            }
+        }
+        this.networkService.transmit();
+    }
+
+    private processClientNetwork(): void {
+        for (let manager of this.networkManagers) {
+            this.networkService.pushCommands(manager.getCommands());
         }
         this.networkService.transmit();
     }

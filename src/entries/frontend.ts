@@ -1,6 +1,5 @@
 import {Game, GameMode} from "../core/game";
 
-
 let game = new Game({
     mode: GameMode.Front,
     serverAddress: 'localhost',

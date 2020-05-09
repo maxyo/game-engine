@@ -1,9 +1,9 @@
 import {Game} from "../game";
 import {Serializable} from "./transport/serializable";
 import Serializer from "./transport/serializer";
+import {Client} from "./client/client";
 
-
-export abstract class Command extends Serializable{
+export abstract class Command extends Serializable {
     abstract execute(game: Game, serializer: Serializer);
 }
 

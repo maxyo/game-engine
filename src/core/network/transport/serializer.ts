@@ -58,7 +58,6 @@ class Serializer {
     deserialize(dataBuffer, byteOffset = 0) {
         byteOffset = byteOffset ? byteOffset : 0;
         let localByteOffset = 0;
-
         let dataView = new DataView(dataBuffer);
 
         let objectClassId = dataView.getUint8(byteOffset + localByteOffset);
@@ -76,7 +75,7 @@ class Serializer {
             let read = this.readDataView(dataView, byteOffset + localByteOffset, objectClass.netScheme[property]);
             obj[property] = read.data;
             localByteOffset += read.bufferSize;
-            if (property === 'id' && !this.networkObjects.has(read.data) && !(obj instanceof Command)) {
+            if (property === 'id' && !this.networkObjects.has(read.data)) {
                 this.networkObjects.set(read.data, obj);
             }
         }

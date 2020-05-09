@@ -12,7 +12,7 @@ export abstract class Transport extends EventSourceTrait {
     protected game: Game;
     protected readonly serializer: Serializer;
 
-    constructor(game: Game) {
+    protected constructor(game: Game) {
         super();
         this.serializer = new Serializer();
         this.serializer.loadClasses();
@@ -25,11 +25,15 @@ export abstract class Transport extends EventSourceTrait {
 
     abstract emit(event: string, data: any);
 
-    protected packCommands(data: Command[]) {
+    protected packCommands(data: Command[]): ArrayBuffer {
         return new CommandCollection(data).serialize(this.serializer).dataBuffer;
     }
 
     protected unpackCommands(buffer): CommandCollection {
         return this.serializer.deserialize(buffer).obj as CommandCollection;
+    }
+
+    protected handleCommands(commands: CommandCollection) {
+        commands.execute(this.game, this.serializer);
     }
 }

@@ -16,9 +16,4 @@ export class GameObject extends Atom {
             rotation: {type: NetworkType.CLASSINSTANCE},
         };
     };
-
-    public constructor() {
-        super();
-        this.init();
-    }
 }

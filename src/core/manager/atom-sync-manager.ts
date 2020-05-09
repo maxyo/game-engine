@@ -7,6 +7,7 @@ import {GameObject} from "../scene/atom/game-object/game-object";
 import {Atom} from "../scene/atom/atom";
 import {DeleteAtomCommand} from "../network/commands/delete-atom-command";
 import {Tile} from "../scene/atom/tile/tile";
+import {Client} from "../network/client/client";
 
 export class AtomSyncManager extends Manager {
     private createCommand: CreateAtomCommand = new CreateAtomCommand;
@@ -37,7 +38,7 @@ export class AtomSyncManager extends Manager {
         }
     }
 
-    flushCommands(): Command[] | null {
+    getCommands(client:Client): Command[] | null {
         let result = [];
 
         if (this.createCommand.objects.length) {
