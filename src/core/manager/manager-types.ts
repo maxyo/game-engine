@@ -1,4 +1,4 @@
-import {Command} from "../network/command";
+import {Command} from "../network/commands/command";
 import {Client} from "../network/client/client";
 
 export interface ISelectiveNetworkManager {

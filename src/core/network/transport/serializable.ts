@@ -4,7 +4,7 @@ import shortid = require("shortid");
 
 export class Serializable {
 
-    static netScheme = {};
+    static get netScheme() {return {}};
 
     public constructor(properties = {}) {
         Object.assign(this, properties);
@@ -36,7 +36,9 @@ export class Serializable {
         let localBufferOffset = 0; // used for counting the bufferOffset
 
         // instance netScheme
+        // @ts-ignore
         if (this.constructor.netScheme) {
+            // @ts-ignore
             netScheme = this.constructor.netScheme;
         } else {
             console.warn('no netScheme defined! This will result in awful performance');
@@ -118,6 +120,7 @@ export class Serializable {
         prevObject = serializer.deserialize(prevObject).obj;
 
         // get list of string properties which changed
+        // @ts-ignore
         let netScheme = this.constructor.netScheme;
         let isString = p => netScheme[p].type === NetworkType.STRING;
         let hasChanged = p => prevObject[p] !== this[p];
@@ -134,6 +137,7 @@ export class Serializable {
     }
 
     syncTo(other) {
+        // @ts-ignore
         let netScheme = this.constructor.netScheme;
         for (let p of Object.keys(netScheme)) {
 

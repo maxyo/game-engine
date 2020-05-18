@@ -1,11 +1,11 @@
 import {Atom} from "../../scene/atom/atom";
-import {Command} from "../command";
+import {ServerCommand} from "./command";
 import {Game} from "src/core/game";
 import {registerClass} from "../transport/serializer";
 import {NetworkType} from "../transport/network-type";
 
 @registerClass
-export class SyncAtomCommand extends Command {
+export class SyncAtomCommand extends ServerCommand {
     objects: Array<Atom> = [];
 
     static get netScheme() {

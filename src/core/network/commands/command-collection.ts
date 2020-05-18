@@ -1,8 +1,8 @@
-import {Serializable} from "../transport/serializable";
 import {Game} from "../../game";
-import {Command} from "../command";
+import {Command} from "./command";
 import Serializer, {registerClass} from "../transport/serializer";
 import {NetworkType} from "../transport/network-type";
+import {Client} from "../client/client";
 
 @registerClass
 export class CommandCollection extends Command {
@@ -14,8 +14,8 @@ export class CommandCollection extends Command {
         }
     }
 
-    public execute(game: Game, serializer: Serializer) {
-        this.commands.map((command) => command.execute(game, serializer));
+    public execute(game: Game, serializer: Serializer, client: Client) {
+        this.commands.map((command) => command.execute(game, serializer, client));
     }
 
     constructor(commands: Command[]) {

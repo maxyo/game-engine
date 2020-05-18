@@ -11,6 +11,10 @@ import shortid = require("shortid");
  * Базовый игровой объект
  */
 
+export interface Atom extends Serializable, EventSourceTrait{
+
+}
+
 @registerClass
 export abstract class Atom extends Serializable {
     @useTrait(EventSourceTrait)
@@ -46,7 +50,6 @@ export abstract class Atom extends Serializable {
 
     public destroy() {
         this.onDestroy();
-
     }
 
     protected onInit() {
@@ -58,6 +61,7 @@ export abstract class Atom extends Serializable {
     public addComponent<T extends Component>(type: { new(go: Atom): T; }): T {
         let comp = new type(this);
         this.components.push(comp);
+        this.trigger('componentAdd', comp)
         return comp;
     }
 
@@ -65,6 +69,16 @@ export abstract class Atom extends Serializable {
         for (let component of this.components) {
             if (component instanceof type) {
                 return component as T;
+            }
+        }
+    }
+
+    public removeComponent<T extends Component>(type: { new(go: Atom): T; }): T {
+        for (let component of this.components) {
+            if (component instanceof type) {
+                this.components.unshift(component);
+                this.trigger('componentRemove', component)
+                return component;
             }
         }
     }

@@ -1,58 +1,51 @@
-import {IServerConfig} from "websocket";
 import {Transport} from "../transport";
 import {Client} from "../../client/client";
-import * as socketio from 'socket.io'
-import {Server, Socket} from 'socket.io'
-import {Command} from "../../command";
+import {Command} from "../../commands/command";
 import {Game} from "../../../game";
+import * as Websocket from 'ws';
 
 export class ServerTransport extends Transport {
     clientsCollection: ClientCollection = new ClientCollection();
-    server: Server;
+    server: Websocket.Server;
 
-    constructor(game: Game, config: IServerConfig) {
+    constructor(game: Game, config: {}) {
         super(game);
-        this.server = socketio(config.httpServer, {
-            path: '/',
-            serveClient: false,
-            pingInterval: 10000,
-            pingTimeout: 5000,
-            cookie: false
-        });
-
-        this.server.on("close", (connection) => this.onClose(connection, 1, ''));
-        this.server.on("connection", (connection) => this.onConnection(connection));
+        this.server = new Websocket.Server(config);
+        this.server.addListener("close", (connection) => this.onClose(connection, 1, ''));
+        this.server.addListener("connection", (connection) => this.onConnection(connection));
         console.log('Start Listening');
     }
 
     broadcast(data: Command[]) {
-        this.server.emit('command', this.packCommands(data));
+        this.clientsCollection.sockets.forEach((socket) => {
+            socket.send(this.packCommands(data));
+        })
     }
 
     emit(event: string, data: any) {
         this.server.emit(event, data);
     }
 
-    send(client: Client, data: Command) {
-        this.clientsCollection.getSocket(client.id).write(data.serialize(this.serializer, {}));
+    send(client: Client, data: Command[]) {
+        this.server.emit('message', this.packCommands(data));
     }
 
-    onData(client: Client, data: Buffer) {
-        console.log(data[0]);
-        this.handleCommands(this.unpackCommands(data.buffer));
+    onData(client: Client, data: ArrayBuffer) {
+        this.handleCommands(this.unpackCommands(data), client);
     }
 
-    onConnection(socket: Socket) {
+    onConnection(socket: Websocket) {
         let client = new Client(socket, this.serializer);
         this.clientsCollection.add(client, socket);
         console.log('client connected (' + client.id + ')');
+        socket.binaryType = "arraybuffer";
         this.trigger('connect', client);
-        socket.on('command', (data) => {
-            this.onData(client, data);
-        });
+        socket.onmessage = (data) => {
+            this.onData(client, data.data as ArrayBuffer);
+        };
     }
 
-    onClose(socket: Socket, reason: number, desc: string) {
+    onClose(socket: Websocket, reason: number, desc: string) {
         let client = this.clientsCollection.getBySocket(socket);
         client.close();
         this.trigger('disconnect', client);
@@ -61,23 +54,23 @@ export class ServerTransport extends Transport {
 }
 
 class ClientCollection {
-    clients: { [key: string]: Client };
-    sockets: { [key: string]: Socket };
+    clients: Map<string, Client>;
+    sockets: Map<string, Websocket>;
 
     constructor() {
-        this.clients = {};
-        this.sockets = {};
+        this.clients = new Map<string, Client>();
+        this.sockets = new Map<string, Websocket>();
     }
 
     public getClient(clientId: string): Client {
         return this.clients[clientId];
     }
 
-    public getSocket(clientId: string): Socket {
+    public getSocket(clientId: string): Websocket {
         return this.sockets[clientId];
     }
 
-    public getBySocket(socket: Socket): Client {
+    public getBySocket(socket: any): Client {
         for (let [clientId, s] of Object.entries(this.sockets)) {
             if (socket == s) {
                 return this.clients[clientId];
@@ -90,8 +83,8 @@ class ClientCollection {
         delete this.sockets[clientId];
     }
 
-    public add(client: Client, socket: Socket) {
-        this.sockets[client.id] = socket;
-        this.clients[client.id] = client;
+    public add(client: Client, socket: Websocket) {
+        this.sockets.set(client.id, socket);
+        this.clients.set(client.id, client);
     }
 }

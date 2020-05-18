@@ -8,3 +8,6 @@ export abstract class Manager {
     }
 }
 
+export abstract class ServerManager extends Manager {
+
+}

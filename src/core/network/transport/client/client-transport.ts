@@ -1,34 +1,41 @@
 import {Transport} from "../transport";
-import * as io from "socket.io-client";
 import {Client} from "../../client/client";
-import {Command} from "../../command";
-import {Socket} from "socket.io";
+import {Command} from "../../commands/command";
 import {Game} from "src/core/game";
-import {CommandCollection} from "../../commands/command-collection";
 
 export class ClientTransport extends Transport {
-    socket: Socket;
+
+    private stack: Command[] = [];
+
+    send(client: Client, data: Command[]) {
+        throw new Error("Method not implemented.");
+    }
+
+    socket: WebSocket;
 
     constructor(game: Game, server: string, port: string) {
         super(game);
 
-        this.socket = io(server + ':' + port);
+        this.socket = new WebSocket('ws://' + server + ':' + port)
+        this.socket.binaryType = "arraybuffer";
 
-        this.socket.on('command', (data) => {
-            this.handleCommands(this.unpackCommands(data));
-        })
+        this.socket.onmessage = (data) => {
+            // @ts-ignore
+            this.handleCommands(this.unpackCommands(data.data));
+        };
     }
 
     broadcast(data: Command[]) {
-        console.log(this.packCommands(data));
-        this.socket.emit('command', this.packCommands(data));
-    }
+        if (this.socket.readyState === 0) {
+            this.stack.push(...data);
+            return;
+        }
 
-    emit(event: string, data: any) {
-        this.socket.emit(event, data);
-    }
-
-    send(client: Client, data: Command | [Command]) {
-        this.socket.send(data);
+        if (this.stack.length !== 0) {
+            data.unshift(...this.stack);
+            this.stack = [];
+        }
+        console.log(data);
+        this.socket.send(this.packCommands(data));
     }
 }
