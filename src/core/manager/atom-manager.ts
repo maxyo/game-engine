@@ -13,7 +13,7 @@ export class AtomManager extends Manager {
     private createCommand: CreateAtomCommand = new CreateAtomCommand;
     private deleteCommand: DeleteAtomCommand = new DeleteAtomCommand;
     private syncCommand: SyncAtomCommand = new SyncAtomCommand;
-    private tick_to_update = 100;
+    private tick_to_update = 1;
     private tick_count = 0;
 
     atoms: Array<Atom> = [];

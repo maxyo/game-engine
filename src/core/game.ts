@@ -23,6 +23,7 @@ import {Player} from "./player";
 import {PlayerManager} from "./manager/player-manager";
 import {InputManager} from "./manager/input-manager";
 import {RpcManager} from "./manager/rpc-manager";
+import {CanvasRenderManager} from "../render/manager/canvas-render-manager";
 
 export interface Game extends EventSourceTrait {
 
@@ -100,7 +101,7 @@ export class Game {
         } else {
             this.attachManager(new PlayerManager(this));
             this.attachManager(new AtomManager(this));
-            this.attachManager(new HtmlRenderManager(this));
+            this.attachManager(new CanvasRenderManager(this));
             this.attachManager(new LogicManager(this));
             this.attachManager(new InputManager(this));
         }

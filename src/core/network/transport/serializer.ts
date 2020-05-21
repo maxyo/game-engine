@@ -1,6 +1,9 @@
 import {NetworkType} from "./network-type";
 import {hashStr} from "../../util/functions";
 import {Serializable} from "./serializable";
+import {ClickInputAction} from "../../input/input-action";
+import {Player} from "../../player";
+import {InitPlayerCommand} from "../commands/init-player-command";
 
 const MAX_UINT_16 = 0xFFFF;
 
@@ -183,7 +186,7 @@ class Serializer {
 
     }
 
-    readDataView(dataView, bufferOffset, netSchemProp) {
+    readDataView(dataView: DataView, bufferOffset: number, netSchemProp: any) {
         let data, bufferSize;
 
         if (netSchemProp.type === NetworkType.FLOAT32) {
@@ -245,30 +248,19 @@ class Serializer {
                 data = this.networkObjects.get(String.fromCharCode.apply(null, a));
                 bufferSize += length * Uint16Array.BYTES_PER_ELEMENT;
             }
-
         } else if (netSchemProp.type === NetworkType.IMAGE) {
             let height = dataView.getFloat32(bufferOffset);
-            bufferSize += Float32Array.BYTES_PER_ELEMENT;
             let width = dataView.getFloat32(bufferOffset);
-            bufferSize += Float32Array.BYTES_PER_ELEMENT;
-
-
-            for (let o of this) {
-
+            bufferSize = Float32Array.BYTES_PER_ELEMENT*2;
+            let i = 0;
+            let imageBufferSize = height * width;
+            let imageBuffer = new Uint8ClampedArray(imageBufferSize);
+            while (i < imageBufferSize) {
+                imageBuffer[i] = dataView.getUint8(bufferSize + i);
+                i++;
             }
-
-            data = new ImageData(dataView.get);
-
-            if (length === MAX_UINT_16) {
-                data = null;
-            } else {
-                let a = [];
-                for (let i = 0; i < length; i++)
-                    a[i] = dataView.getUint16(bufferOffset + localBufferOffset + i * 2);
-                data = this.networkObjects.get(String.fromCharCode.apply(null, a));
-                bufferSize += length * Uint16Array.BYTES_PER_ELEMENT;
-            }
-
+            bufferSize += imageBufferSize;
+            data = new ImageData(imageBuffer, width, height);
         } else if (this.customTypes[netSchemProp.type] != null) {
             data = this.customTypes[netSchemProp.type].readDataView(dataView, bufferOffset);
         } else {

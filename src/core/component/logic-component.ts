@@ -1,9 +1,9 @@
 import {registerClass} from "../network/transport/serializer";
 import {Atom} from "../scene/atom/atom";
 import {Component} from "./component";
-import {RIGHT} from "../vector";
+import {RIGHT, Vector} from "../vector";
 import {Game, GameMode} from "../game";
-import {RenderComponent} from "./render-component";
+import {RenderComponent} from "../../render/component/render-component";
 import {NetworkType} from "../network/transport/network-type";
 import shortid = require("shortid");
 import {Serializable} from "../network/transport/serializable";
@@ -35,6 +35,9 @@ export class LogicComponent extends Component {
     }
 
     public update(tpf: number) {
+        if(Game.instance.isServer) {
+            this.go.position.add(new Vector((Math.random()-Math.random())*10, (Math.random()-Math.random())*10))
+        }
     }
 
     public randomColor() {

@@ -14,6 +14,8 @@ export class CanvasRenderManager extends Manager {
 
     private items: RenderComponent[] = [];
 
+    private imagesCache: WeakMap<ImageData, ImageBitmap> = new WeakMap<ImageData, ImageBitmap>();
+
     constructor(game: Game) {
         super(game);
         this.frame = window.document.getElementById("game-frame") as HTMLCanvasElement;
@@ -47,9 +49,15 @@ export class CanvasRenderManager extends Manager {
                 this.context.fill();
                 this.context.closePath();
             } else if (shape instanceof SpriteShape) {
-                this.context.beginPath();
-                this.context.drawImage(shape.sprite, item.go.position.x, item.go.position.x);
-                this.context.closePath();
+                if (this.imagesCache.has(shape.sprite)) {
+                    this.context.beginPath();
+                    this.context.drawImage(this.imagesCache.get(shape.sprite), item.go.position.x, item.go.position.x);
+                    this.context.closePath();
+                } else {
+                    createImageBitmap(shape.sprite).then((image) => {
+                        this.imagesCache.set((shape as SpriteShape).sprite, image);
+                    });
+                }
             }
         }
     }

@@ -8,5 +8,5 @@ let game = new Game({
     port: "3000"
 });
 
-// game.getManager(PlayerManager).registerPlayer(new Player({id: 1, nickname: "maxyo"}));
+game.getManager(PlayerManager).registerPlayer(new Player({id: 1, nickname: "maxyo"}));
 game.start();
