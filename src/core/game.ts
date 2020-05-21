@@ -13,13 +13,23 @@ import {
     isUpdatableManager,
     IUpdatableManager
 } from "./manager/manager-types";
-import {AtomSyncManager} from "./manager/atom-sync-manager";
+import {AtomManager} from "./manager/atom-manager";
 import {HtmlRenderManager} from "./manager/html-render-manager";
-import {IServerConfig} from "websocket";
 import {LogicManager} from "./manager/logic-manager";
-import {HtmlInputManager} from "./manager/html-input-manager";
+import {Client} from "./network/client/client";
+import {EventSourceTrait} from "./event/event-source-trait";
+import {use} from "typescript-mix";
+import {Player} from "./player";
+import {PlayerManager} from "./manager/player-manager";
+import {InputManager} from "./manager/input-manager";
+import {RpcManager} from "./manager/rpc-manager";
+
+export interface Game extends EventSourceTrait {
+
+}
 
 export class Game {
+    @use(EventSourceTrait) this;
     /**
      * Класс управляющий игрой, её процессом, содержащий список объектов и их состояний для отправки клиентам.
      *
@@ -42,6 +52,19 @@ export class Game {
     public readonly gameMode: GameMode;
 
     public static instance: Game;
+
+    public get clients(): undefined | Map<string, Client> {
+        if (this.gameMode !== GameMode.Server) {
+            return undefined;
+        }
+        return (this.transport as ServerTransport).clientsCollection.clients;
+    }
+
+    public get isServer(): boolean {
+        return this.gameMode === GameMode.Server;
+    }
+
+    private readonly players: Player[] = [];
 
     constructor(config: IGameConfig) {
         this.gameMode = config.mode;
@@ -70,30 +93,16 @@ export class Game {
     }
 
     private initManagers() {
-
         if (this.gameMode === GameMode.Server) {
-            this.allManagers = [
-                new AtomSyncManager(this),
-                new LogicManager(this),
-            ];
+            this.attachManager(new AtomManager(this));
+            this.attachManager(new LogicManager(this));
+            this.attachManager(new RpcManager(this));
         } else {
-            this.allManagers = [
-                new HtmlRenderManager(this),
-                new LogicManager(this),
-                new HtmlInputManager(this),
-            ];
-        }
-
-        for (let manager of this.allManagers) {
-            if (isNetworkManager(manager)) {
-                this.networkManagers.push(manager as Manager & INetworkManager);
-            }
-            if (isSelectiveNetworkManager(manager)) {
-                this.selectiveNetworkManagers.push(manager as Manager & ISelectiveNetworkManager);
-            }
-            if (isUpdatableManager(manager)) {
-                this.updatableManagers.push(manager as Manager & IUpdatableManager);
-            }
+            this.attachManager(new PlayerManager(this));
+            this.attachManager(new AtomManager(this));
+            this.attachManager(new HtmlRenderManager(this));
+            this.attachManager(new LogicManager(this));
+            this.attachManager(new InputManager(this));
         }
     }
 
@@ -132,7 +141,7 @@ export class Game {
             this.networkService.pushCommands(manager.getCommands());
         }
         for (let manager of this.selectiveNetworkManagers) {
-            for (let client of Object.values((this.transport as ServerTransport).clientsCollection.clients)) {
+            for (let [key, client] of (this.transport as ServerTransport).clientsCollection.clients) {
                 this.networkService.pushCommands(manager.getCommandsForClient(client));
             }
         }
@@ -153,24 +162,77 @@ export class Game {
     }
 
     private processInput() {
-
     }
 
     private processRender() {
     }
 
     private loadScene(scene: Scene) {
-
     }
 
     private stop() {
         this.state = GameState.Stopping;
     }
+
+    private attachManager(manager: Manager) {
+        this.allManagers.push(manager);
+        if (isNetworkManager(manager)) {
+            this.networkManagers.push(manager as Manager & INetworkManager);
+        }
+        if (isSelectiveNetworkManager(manager)) {
+            this.selectiveNetworkManagers.push(manager as Manager & ISelectiveNetworkManager);
+        }
+        if (isUpdatableManager(manager)) {
+            this.updatableManagers.push(manager as Manager & IUpdatableManager);
+        }
+        this.trigger('managerAdd', manager)
+    }
+
+    private detachManager(manager: Manager) {
+        this.allManagers.remove(manager);
+        this.networkManagers.remove(manager as Manager & INetworkManager);
+        this.selectiveNetworkManagers.remove(manager as Manager & ISelectiveNetworkManager);
+        this.updatableManagers.remove(manager as Manager & IUpdatableManager);
+        this.trigger('managerRemove', manager)
+    }
+
+    public addManager<T extends Manager>(type: { new(game: Game): T; }): T {
+        let manager = new type(this);
+        this.attachManager(manager)
+        return manager;
+    }
+
+    public getManager<T extends Manager>(type: { new(game: Game): T; }): T {
+        for (let manager of this.allManagers) {
+            if (manager instanceof type) {
+                return manager as T;
+            }
+        }
+    }
+
+    public removeManager<T extends Manager>(type: { new(game: Game): T; }): T {
+        for (let manager of this.allManagers) {
+            if (manager instanceof type) {
+                this.detachManager(manager);
+                return manager;
+            }
+        }
+    }
+
+    public attachPlayer(player: Player) {
+        this.players.push(player);
+        this.trigger('playerAdd', player);
+    }
+
+    public detachPlayer(player: Player) {
+        this.players.remove(player);
+        this.trigger('playerRemove', player);
+    }
 }
 
 export interface IGameConfig {
     mode: GameMode,
-    serverConfig?: IServerConfig,   // if mode==Server
+    serverConfig?: {},   // if mode==Server
     scenePath?: string,             // if mode==Server
 
     serverAddress?: string,         // if mode==Client

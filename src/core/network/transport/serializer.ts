@@ -69,6 +69,7 @@ class Serializer {
 
         localByteOffset += Uint8Array.BYTES_PER_ELEMENT; // advance the byteOffset after the classId
         // create de-referenced instance of the class. gameEngine and id will be 'tacked on' later at the sync strategies
+
         let obj = new objectClass(null, {id: null});
         for (let property of Object.keys(objectClass.netScheme)) {
             let read = this.readDataView(dataView, byteOffset + localByteOffset, objectClass.netScheme[property]);
@@ -146,6 +147,17 @@ class Serializer {
                         localBufferOffset += Uint16Array.BYTES_PER_ELEMENT;
                         for (let i = 0; i < strLen; i++)
                             dataView.setUint16(bufferOffset + localBufferOffset + i * 2, item.charCodeAt(i));
+                        localBufferOffset += Uint16Array.BYTES_PER_ELEMENT * strLen;
+                    }
+                } else if (netSchemProp.itemType === NetworkType.REFERENCE) {
+                    if (item === null) {
+                        dataView.setUint16(bufferOffset, MAX_UINT_16);
+                    } else {
+                        let strLen = item.id.length;
+                        dataView.setUint16(bufferOffset + localBufferOffset, strLen);
+                        localBufferOffset += Uint16Array.BYTES_PER_ELEMENT;
+                        for (let i = 0; i < strLen; i++)
+                            dataView.setUint16(bufferOffset + localBufferOffset + i * Uint16Array.BYTES_PER_ELEMENT, item.id.charCodeAt(i));
                         localBufferOffset += Uint16Array.BYTES_PER_ELEMENT * strLen;
                     }
                 } else {
@@ -303,9 +315,14 @@ class Serializer {
 }
 
 export function registerClass(constructor) {
+    if(CLASSES.has(hashStr(constructor.name))) {
+        console.error('Found same hash in classes');
+    }
     CLASSES.set(hashStr(constructor.name), constructor);
 }
 
 const CLASSES: Map<number, Function> = new Map<number, Function>();
-
+this.registerClass(InitPlayerCommand)
+this.registerClass(Player);
+this.registerClass(ClickInputAction);
 export default Serializer;

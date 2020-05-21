@@ -11,11 +11,11 @@ export interface Scene extends EventSourceTrait {
 
 export class Scene {
     @useTrait(EventSourceTrait)
-    private objects: GameObject[] = [];
+    private objects: Set<GameObject> = new Set<GameObject>();
     private tiles: Tile[] = [];
     private size: Vector;
 
-    public getObjects(): GameObject[] {
+    public getObjects(): Set<GameObject> {
         return this.objects;
     }
 
@@ -25,7 +25,7 @@ export class Scene {
 
     public attach(atom: Atom) {
         if (atom instanceof GameObject) {
-            this.objects.push(atom as GameObject);
+            this.objects.add(atom as GameObject);
         }
         if (atom instanceof Tile) {
             this.tiles.push(atom as Tile);
@@ -35,10 +35,7 @@ export class Scene {
 
     public detach(atom: Atom) {
         if (atom instanceof GameObject) {
-            let i = this.objects.indexOf(atom);
-            if (i !== -1) {
-                this.objects.slice(i, 1);
-            }
+            this.objects.delete(atom);
         }
         if (atom instanceof Tile) {
             let i = this.tiles.indexOf(atom);

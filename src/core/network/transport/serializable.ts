@@ -8,7 +8,7 @@ export interface Serializable {
 
 export class Serializable {
 
-    static netScheme = {};
+    static get netScheme() {return {}};
 
     public constructor(properties = {}) {
         Object.assign(this, properties);

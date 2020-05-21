@@ -3,6 +3,7 @@ import {EventSourceTrait} from "../../event/event-source-trait";
 import {Socket} from "socket.io";
 import {Interface} from "readline";
 import Serializer from "../transport/serializer";
+import {Player} from "../../player";
 
 /**
  * events:
@@ -13,6 +14,8 @@ export class Client extends EventSourceTrait {
     private readonly socket: Socket;
     private currentInterface: Interface;
     private serializer: Serializer;
+
+    public readonly players: Map<number, Player> = new Map<number, Player>();
 
     private _networkAge: number = 0;
 

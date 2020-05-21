@@ -1,5 +1,5 @@
 import {Client} from "../client/client";
-import {Command} from "../command";
+import {Command} from "../commands/command";
 import {EventSourceTrait} from "../../event/event-source-trait";
 import {Game} from "../../game";
 import Serializer from "./serializer";
@@ -21,9 +21,7 @@ export abstract class Transport extends EventSourceTrait {
 
     abstract broadcast(buf);
 
-    abstract send(client: Client, data: Command | [Command]);
-
-    abstract emit(event: string, data: any);
+    abstract send(client: Client, data: Command[]);
 
     protected packCommands(data: Command[]): ArrayBuffer {
         return new CommandCollection(data).serialize(this.serializer).dataBuffer;
@@ -33,7 +31,7 @@ export abstract class Transport extends EventSourceTrait {
         return this.serializer.deserialize(buffer).obj as CommandCollection;
     }
 
-    protected handleCommands(commands: CommandCollection) {
-        commands.execute(this.game, this.serializer);
+    protected handleCommands(commands: CommandCollection, client: Client) {
+        commands.execute(this.game, this.serializer, client);
     }
 }

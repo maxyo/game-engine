@@ -1,7 +1,6 @@
 import {NetworkType} from "../network/transport/network-type";
 import {registerClass} from "../network/transport/serializer";
 import {Serializable} from "../network/transport/serializable";
-import {registerCommand} from "../network/command";
 
 @registerClass
 export class InputAction extends Serializable {
@@ -16,8 +15,8 @@ export class InputAction extends Serializable {
 
 @registerClass
 export class ClickInputAction extends InputAction {
-    x: number;
-    y: number;
+    public x: number;
+    public y: number;
 
     type = InputActionType.CLICK;
 
@@ -26,7 +25,6 @@ export class ClickInputAction extends InputAction {
             ...super.netScheme,
             x: {type: NetworkType.FLOAT32},
             y: {type: NetworkType.FLOAT32},
-
         }
     }
 }

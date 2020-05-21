@@ -91,7 +91,7 @@ export function distinctFilter(value, index, self) {
 }
 
 export function hashStr(str, bits = null) {
-    let hash = 5381;
+    let hash = 532;
     let i = str.length;
     bits = bits ? bits : 8;
 
@@ -102,4 +102,13 @@ export function hashStr(str, bits = null) {
     hash = hash % (Math.pow(2, bits) - 1);
 
     return hash;
+}
+
+declare global {
+    interface Array<T> {
+        remove(element: T): void;
+    }
+}
+Array.prototype.remove = (el: any) => {
+    delete this[this.indexOf(el)];
 }

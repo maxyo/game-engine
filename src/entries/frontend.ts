@@ -1,4 +1,6 @@
 import {Game, GameMode} from "../core/game";
+import {Player} from "../core/player";
+import {PlayerManager} from "../core/manager/player-manager";
 
 let game = new Game({
     mode: GameMode.Front,
@@ -6,4 +8,5 @@ let game = new Game({
     port: "3000"
 });
 
+// game.getManager(PlayerManager).registerPlayer(new Player({id: 1, nickname: "maxyo"}));
 game.start();
