@@ -1,9 +1,9 @@
-import {Manager} from "./manager";
-import {Game} from "../game";
-import {Atom} from "../scene/atom/atom";
+import {Manager} from "../../core/manager/manager";
+import {Game} from "../../core/game";
+import {Atom} from "../../core/scene/atom/atom";
 import {RenderComponent} from "../component/render-component";
-import {GameObject} from "../scene/atom/game-object/game-object";
-import {Tile} from "../scene/atom/tile/tile";
+import {GameObject} from "../../core/scene/atom/game-object/game-object";
+import {Tile} from "../../core/scene/atom/tile/tile";
 
 export class HtmlRenderManager extends Manager {
     private frame: HTMLElement;

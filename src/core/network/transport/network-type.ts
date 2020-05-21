@@ -7,6 +7,6 @@ export enum NetworkType {
     STRING,
     REFERENCE,
     CLASSINSTANCE,
-    LIST
-
+    LIST,
+    IMAGE
 }

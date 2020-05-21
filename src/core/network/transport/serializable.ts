@@ -2,6 +2,10 @@ import {hashStr} from "../../util/functions";
 import {NetworkType} from "./network-type";
 import shortid = require("shortid");
 
+export interface Serializable {
+    constructor: SerializablePrototype
+}
+
 export class Serializable {
 
     static netScheme = {};
@@ -98,6 +102,9 @@ export class Serializable {
                             localBufferOffset += serializer.getTypeByteSize(netScheme[property].itemType);
                         }
                     }
+                } else if (netScheme[property].type === NetworkType.IMAGE) {
+                    localBufferOffset += Uint32Array.BYTES_PER_ELEMENT * 2; //width and height
+                    localBufferOffset += Uint8ClampedArray.BYTES_PER_ELEMENT * this[property].height * this[property].width * 4; // pixels
                 } else {
                     // advance offset
                     localBufferOffset += serializer.getTypeByteSize(netScheme[property].type);
@@ -109,28 +116,6 @@ export class Serializable {
         }
 
         return {dataBuffer, bufferOffset: localBufferOffset};
-    }
-
-    // build a clone of this object with pruned strings (if necessary)
-    prunedStringsClone(serializer, prevObject) {
-
-        if (!prevObject) return this;
-        prevObject = serializer.deserialize(prevObject).obj;
-
-        // get list of string properties which changed
-        let netScheme = this.constructor.netScheme;
-        let isString = p => netScheme[p].type === NetworkType.STRING;
-        let hasChanged = p => prevObject[p] !== this[p];
-        let changedStrings = Object.keys(netScheme).filter(isString).filter(hasChanged);
-        if (changedStrings.length == 0) return this;
-
-        // build a clone with pruned strings
-        // @ts-ignore
-        let prunedCopy = new this.constructor();
-        for (let p of Object.keys(netScheme))
-            prunedCopy[p] = changedStrings.indexOf(p) < 0 ? this[p] : null;
-
-        return prunedCopy;
     }
 
     syncTo(other) {
@@ -152,4 +137,8 @@ export class Serializable {
         }
     }
 
+}
+
+export interface SerializablePrototype extends Function{
+    netScheme: object;
 }

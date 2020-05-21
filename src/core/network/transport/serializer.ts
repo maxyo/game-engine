@@ -1,7 +1,6 @@
 import {NetworkType} from "./network-type";
 import {hashStr} from "../../util/functions";
 import {Serializable} from "./serializable";
-import {Command} from "../command";
 
 const MAX_UINT_16 = 0xFFFF;
 
@@ -154,6 +153,15 @@ class Serializer {
                     localBufferOffset += this.getTypeByteSize(netSchemProp.itemType);
                 }
             }
+        } else if (netSchemProp.type === NetworkType.IMAGE) {
+            let localBufferOffset = 0;
+            dataView.set(bufferOffset + localBufferOffset, value.height);
+            localBufferOffset += Float32Array.BYTES_PER_ELEMENT;
+            dataView.set(bufferOffset + localBufferOffset, value.width);
+            localBufferOffset += Float32Array.BYTES_PER_ELEMENT;
+            value.data.forEach((value, i) => dataView.setUint8(value, bufferOffset + localBufferOffset + i));
+            localBufferOffset += Uint8Array.BYTES_PER_ELEMENT * value.width * value.height * 4;
+
         } else if (this.customTypes[netSchemProp.type]) {
             // this is a custom data property which needs to define its own write method
             this.customTypes[netSchemProp.type].writeDataView(dataView, value, bufferOffset);
@@ -216,6 +224,29 @@ class Serializer {
             let length = dataView.getUint16(bufferOffset);
             let localBufferOffset = Uint16Array.BYTES_PER_ELEMENT;
             bufferSize = localBufferOffset;
+            if (length === MAX_UINT_16) {
+                data = null;
+            } else {
+                let a = [];
+                for (let i = 0; i < length; i++)
+                    a[i] = dataView.getUint16(bufferOffset + localBufferOffset + i * 2);
+                data = this.networkObjects.get(String.fromCharCode.apply(null, a));
+                bufferSize += length * Uint16Array.BYTES_PER_ELEMENT;
+            }
+
+        } else if (netSchemProp.type === NetworkType.IMAGE) {
+            let height = dataView.getFloat32(bufferOffset);
+            bufferSize += Float32Array.BYTES_PER_ELEMENT;
+            let width = dataView.getFloat32(bufferOffset);
+            bufferSize += Float32Array.BYTES_PER_ELEMENT;
+
+
+            for (let o of this) {
+
+            }
+
+            data = new ImageData(dataView.get);
+
             if (length === MAX_UINT_16) {
                 data = null;
             } else {
