@@ -4,6 +4,8 @@ import {Serializable} from "./serializable";
 import {ClickInputAction} from "../../input/input-action";
 import {Player} from "../../player";
 import {InitPlayerCommand} from "../commands/init-player-command";
+import {HumanComponent} from "../../component/human-component";
+import {Vector} from "../../vector";
 
 const MAX_UINT_16 = 0xFFFF;
 
@@ -317,4 +319,6 @@ const CLASSES: Map<number, Function> = new Map<number, Function>();
 this.registerClass(InitPlayerCommand)
 this.registerClass(Player);
 this.registerClass(ClickInputAction);
+this.registerClass(HumanComponent);
+this.registerClass(Vector);
 export default Serializer;

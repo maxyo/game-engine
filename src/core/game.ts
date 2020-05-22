@@ -14,7 +14,6 @@ import {
     IUpdatableManager
 } from "./manager/manager-types";
 import {AtomManager} from "./manager/atom-manager";
-import {HtmlRenderManager} from "./manager/html-render-manager";
 import {LogicManager} from "./manager/logic-manager";
 import {Client} from "./network/client/client";
 import {EventSourceTrait} from "./event/event-source-trait";
@@ -24,6 +23,8 @@ import {PlayerManager} from "./manager/player-manager";
 import {InputManager} from "./manager/input-manager";
 import {RpcManager} from "./manager/rpc-manager";
 import {CanvasRenderManager} from "../render/manager/canvas-render-manager";
+import {GamePlayerManager} from "./manager/game-player-manager";
+import {BallManager} from "./manager/ball-manager";
 
 export interface Game extends EventSourceTrait {
 
@@ -104,6 +105,12 @@ export class Game {
             this.attachManager(new CanvasRenderManager(this));
             this.attachManager(new LogicManager(this));
             this.attachManager(new InputManager(this));
+            this.attachManager(new GamePlayerManager(this));
+            this.attachManager(new BallManager(this));
+        }
+
+        for (let manager of this.allManagers) {
+            manager.init();
         }
     }
 

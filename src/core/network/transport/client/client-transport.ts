@@ -18,7 +18,6 @@ export class ClientTransport extends Transport {
 
         this.socket = new WebSocket('ws://' + server + ':' + port)
         this.socket.binaryType = "arraybuffer";
-
         this.socket.onmessage = (data) => {
             // @ts-ignore
             this.handleCommands(this.unpackCommands(data.data));

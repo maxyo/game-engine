@@ -6,6 +6,10 @@ export abstract class Manager {
     constructor(game: Game) {
         this.game = game;
     }
+
+    public init() {
+
+    }
 }
 
 export abstract class ServerManager extends Manager {

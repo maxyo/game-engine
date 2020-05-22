@@ -4,10 +4,17 @@ import {Command} from "../network/commands/command";
 import {Game} from "../game";
 import {ClickInputAction} from "../input/input-action";
 import {SpawnBoxCommand} from "../network/commands/spawn-box-command";
-import {DeleteBoxCommand} from "../network/commands/delete-box-command";
 import {ChangeColorCommand} from "./change-color-command";
+import {EventSourceTrait} from "../event/event-source-trait";
+import {use} from "typescript-mix";
+
+export interface InputManager extends EventSourceTrait{
+
+}
 
 export class InputManager extends Manager implements IUpdatableManager, INetworkManager {
+    @use(EventSourceTrait) this;
+
     private commands: Command[] = [];
     private frame: HTMLElement;
 
@@ -15,18 +22,20 @@ export class InputManager extends Manager implements IUpdatableManager, INetwork
         super(game);
         this.frame = window.document.getElementById('game-frame');
         this.frame.addEventListener('click', (e) => {
-            let action = new ClickInputAction();
-            // @ts-ignore
-            action.x = event.x;
-            // @ts-ignore
-            action.y = event.y;
-            this.commands.push(new SpawnBoxCommand({x: e.x, y: e.y}));
         });
 
         this.frame.addEventListener('contextmenu', (e) => {
-            e.preventDefault();
-            this.commands.push(new ChangeColorCommand());
+
+        });
+
+        window.document.addEventListener('keydown', (e: KeyboardEvent) => {
+            this.trigger('keydown', e.code);
+        });
+
+        window.document.addEventListener('keyup', (e: KeyboardEvent) => {
+            this.trigger('keyup', e.code);
         })
+
     }
 
     public update() {

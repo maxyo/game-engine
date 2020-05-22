@@ -1,11 +1,10 @@
 import {createServer} from "http";
 import {Game, GameMode, IGameConfig} from "../core/game";
 import {GameObject} from "../core/scene/atom/game-object/game-object";
-import {LogicComponent} from "../core/component/logic-component";
 import {RenderComponent} from "../render/component/render-component";
-import {BoxShape} from "../render/shape/box-shape";
 import {AtomManager} from "../core/manager/atom-manager";
-import {Vector} from "../core/vector";
+import {HumanComponent} from "../core/component/human-component";
+import {PlayerShape} from "../render/shape/player-shape";
 
 let args = {};
 
@@ -26,17 +25,3 @@ let game = new Game(config);
 
 
 game.start();
-setInterval(() => {
-    if (objcount > 500) {
-        return;
-    }
-    objcount++;
-    let go = new GameObject();
-    go.position.add(new Vector(Math.random()*1000, Math.random()*1000));
-    let render = go.addComponent(RenderComponent);
-    render.shape = new BoxShape();
-    render.shape.height = Math.random()*10;
-    render.shape.width = Math.random()*10;
-    go.addComponent(LogicComponent);
-    game.getManager(AtomManager).spawn(go);
-}, 1000);

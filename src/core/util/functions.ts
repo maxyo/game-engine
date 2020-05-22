@@ -112,3 +112,28 @@ declare global {
 Array.prototype.remove = (el: any) => {
     delete this[this.indexOf(el)];
 }
+
+declare global {
+    interface Math {
+        clamp(value: number, min: number, max: number): number;
+        lerp(value1: number, value2: number, amount: number): number;
+    }
+}
+
+Math.clamp = function (value, min, max) {
+
+    if (value < min) {
+        return min;
+    }
+    else if (value > max) {
+        return max;
+    }
+
+    return value;
+};
+
+Math.lerp = function (value1, value2, amount) {
+    amount = amount < 0 ? 0 : amount;
+    amount = amount > 1 ? 1 : amount;
+    return value1 + (value2 - value1) * amount;
+};

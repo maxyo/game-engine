@@ -3,7 +3,7 @@ import {NetworkType} from "../../core/network/transport/network-type";
 import {registerClass} from "../../core/network/transport/serializer";
 
 @registerClass
-export class Shape extends Serializable {
+export abstract class Shape extends Serializable {
     height: number;
     width: number;
 

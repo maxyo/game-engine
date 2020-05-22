@@ -7,6 +7,7 @@ import {RenderComponent} from "../component/render-component";
 import {BoxShape} from "../shape/box-shape";
 import {CircleShape} from "../shape/circle-shape";
 import {SpriteShape} from "../shape/sprite-shape";
+import {PlayerShape} from "../shape/player-shape";
 
 export class CanvasRenderManager extends Manager {
     private frame: HTMLCanvasElement;
@@ -20,6 +21,8 @@ export class CanvasRenderManager extends Manager {
         super(game);
         this.frame = window.document.getElementById("game-frame") as HTMLCanvasElement;
         this.context = this.frame.getContext("2d");
+        this.frame.width = window.innerWidth
+        this.frame.height = window.innerHeight;
 
         this.game.getScene().attachEventListener('attached', (event) => this.onSceneAtomAttached(event.data[0]));
         this.game.getScene().attachEventListener('detached', (event) => this.onSceneAtomDetached(event.data[0]));
@@ -40,6 +43,25 @@ export class CanvasRenderManager extends Manager {
                 this.context.beginPath();
                 this.context.rect(item.go.position.x, item.go.position.y, shape.width, shape.height);
                 this.context.fillStyle = item.color;
+                this.context.fill();
+                this.context.closePath();
+            } else if (shape instanceof PlayerShape) {
+                this.context.beginPath();
+                this.context.arc(item.go.position.x, item.go.position.y, shape.radius, 0,3.14, true);
+                this.context.fillStyle = item.color;
+                this.context.fill();
+                this.context.closePath();
+
+                this.context.beginPath();
+                let eyesX = shape.toRightDir === 1 ? 50 : -50;
+                this.context.arc(item.go.position.x + eyesX, item.go.position.y - 50, 10, 0, 360);
+                this.context.fillStyle = 'white';
+                this.context.fill();
+                this.context.closePath();
+
+                this.context.beginPath();
+                this.context.arc(item.go.position.x + (eyesX*1.1), item.go.position.y - 53, 3, 0, 360);
+                this.context.fillStyle = 'black';
                 this.context.fill();
                 this.context.closePath();
             } else if (shape instanceof CircleShape) {

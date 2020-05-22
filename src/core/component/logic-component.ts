@@ -36,7 +36,11 @@ export class LogicComponent extends Component {
 
     public update(tpf: number) {
         if(Game.instance.isServer) {
-            this.go.position.add(new Vector((Math.random()-Math.random())*10, (Math.random()-Math.random())*10))
+            if (this.go.position.y > 2000) {
+                this.go.position.y = -10;
+            } else {
+                this.go.position.y += 5;
+            }
         }
     }
 

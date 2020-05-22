@@ -4,7 +4,7 @@ import {PlayerManager} from "../core/manager/player-manager";
 
 let game = new Game({
     mode: GameMode.Front,
-    serverAddress: '192.168.1.113',
+    serverAddress: '192.168.84.27',
     port: "3000"
 });
 
