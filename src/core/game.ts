@@ -25,6 +25,7 @@ import {RpcManager} from "./manager/rpc-manager";
 import {CanvasRenderManager} from "../render/manager/canvas-render-manager";
 import {GamePlayerManager} from "./manager/game-player-manager";
 import {BallManager} from "./manager/ball-manager";
+import {CollisionManager} from "./manager/collision-manager";
 
 export interface Game extends EventSourceTrait {
 
@@ -107,6 +108,7 @@ export class Game {
             this.attachManager(new InputManager(this));
             this.attachManager(new GamePlayerManager(this));
             this.attachManager(new BallManager(this));
+            this.attachManager(new CollisionManager(this));
         }
 
         for (let manager of this.allManagers) {

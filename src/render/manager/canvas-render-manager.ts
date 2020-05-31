@@ -21,8 +21,8 @@ export class CanvasRenderManager extends Manager {
         super(game);
         this.frame = window.document.getElementById("game-frame") as HTMLCanvasElement;
         this.context = this.frame.getContext("2d");
-        this.frame.width = window.innerWidth
-        this.frame.height = window.innerHeight;
+        this.frame.width = window.innerWidth - 50;
+        this.frame.height = window.innerHeight - 5;
 
         this.game.getScene().attachEventListener('attached', (event) => this.onSceneAtomAttached(event.data[0]));
         this.game.getScene().attachEventListener('detached', (event) => this.onSceneAtomDetached(event.data[0]));

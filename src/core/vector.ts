@@ -10,8 +10,8 @@ export class Vector {
     private _Y: number;
 
     static netScheme = {
-        _X: {type:NetworkType.FLOAT32},
-        _Y: {type:NetworkType.FLOAT32}
+        _X: {type: NetworkType.FLOAT32},
+        _Y: {type: NetworkType.FLOAT32}
     };
 
     public constructor(x: number = 0, y: number = 0) {
@@ -75,6 +75,10 @@ export class Vector {
 
     public copy(): Vector {
         return new Vector(this._X, this._Y);
+    }
+
+    public static distance(vector1: Vector, vector2: Vector): number {
+        return Math.abs(Math.sqrt(Math.pow(vector1.x - vector2.x, 2) + Math.pow(vector1.y - vector2.y, 2)));
     }
 }
 

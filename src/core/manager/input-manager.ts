@@ -29,6 +29,9 @@ export class InputManager extends Manager implements IUpdatableManager, INetwork
         });
 
         window.document.addEventListener('keydown', (e: KeyboardEvent) => {
+            if(e.repeat){
+                return;
+            }
             this.trigger('keydown', e.code);
         });
 

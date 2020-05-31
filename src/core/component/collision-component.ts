@@ -1,11 +1,19 @@
 import {Component} from "./component";
-import {IUpdatable} from "../scene/atom/interfaces/IUpdatable";
 import {Shape} from "../../render/shape/shape";
+import {CollisionEvent} from "../../collision/collision-event";
+import {use} from "typescript-mix";
+import {EventSourceTrait} from "../event/event-source-trait";
 
-export class CollisionComponent extends Component implements IUpdatable{
+export interface CollisionComponent extends EventSourceTrait {
+
+}
+
+export class CollisionComponent extends Component {
+    @use(EventSourceTrait) this;
 
     public shape: Shape;
 
-    update(tick_lag: number): void {
+    public triggerCollision(collisionEvent: CollisionEvent) {
+        this.trigger('collide', collisionEvent);
     }
 }

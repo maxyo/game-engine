@@ -4,7 +4,11 @@ import {GameObject} from "../scene/atom/game-object/game-object";
 import {Tile} from "../scene/atom/tile/tile";
 import {Atom} from "../scene/atom/atom";
 import {CollisionComponent} from "../component/collision-component";
-import {Collision} from "../../collision/collision";
+import {CollisionEvent} from "../../collision/collisionEvent";
+import {Vector} from "../vector";
+import {CircleShape} from "../../render/shape/circle-shape";
+import {BoxShape} from "../../render/shape/box-shape";
+import {BallComponent} from "../component/ball-component";
 
 export class CollisionManager extends Manager implements IUpdatableManager {
 
@@ -20,28 +24,60 @@ export class CollisionManager extends Manager implements IUpdatableManager {
     }
 
     update(tpf: number) {
-        this.components.forEach((component: CollisionComponent) => component.update(tpf));
         this.processCollisions();
     }
 
     private processCollisions() {
-        this.components.forEach((comp) => this.searchForCollisions(comp));
-    }
-
-    private searchForCollisions(comp: CollisionComponent) {
-        for (let otherComp of this.components) {
-            if (otherComp.go.position.x - otherComp.shape.width / 2 > comp.go.position.x - comp.shape.width / 2 ||
-                otherComp.go.position.x + otherComp.shape.width / 2 < comp.go.position.x + comp.shape.width / 2 ||
-                otherComp.go.position.y - otherComp.shape.height / 2 > comp.go.position.y - comp.shape.height / 2 ||
-                otherComp.go.position.y + otherComp.shape.height / 2 < comp.go.position.y + comp.shape.height / 2
-            ) {
-                let collision = this.getCollision(comp, otherComp);
+        for (let cursor = 0; cursor <= this.components.length; cursor++) {
+            let comp = this.components[cursor];
+            for (let otherCursor = cursor + 1; otherCursor <= this.components.length ; otherCursor++) {
+                let otherComp = this.components[otherCursor];
+                if (otherComp) {
+                    this.checkCollision(comp, otherComp);
+                }
             }
         }
     }
 
-    private getCollision(comp1, comp2): Collision | null {
+    private checkCollision(comp1: CollisionComponent, comp2: CollisionComponent): void {
+        if (comp1.shape instanceof CircleShape && comp2.shape instanceof CircleShape) {
+            if (Vector.distance(comp1.go.position, comp2.go.position) < comp1.shape.radius + comp2.shape.radius) {
+                comp1.triggerCollision(new CollisionEvent(comp1, comp2));
+                comp2.triggerCollision(new CollisionEvent(comp2, comp1));
+            }
+        } else if (comp1.shape instanceof BoxShape && comp2.shape instanceof BoxShape) {
+            if (comp1.go.position.x < comp2.go.position.x + comp2.shape.width &&
+                comp1.go.position.x + comp1.shape.width > comp2.go.position.x &&
+                comp1.go.position.y < comp2.go.position.y + comp2.shape.height &&
+                comp1.go.position.y + comp1.shape.height > comp2.go.position.y) {
+                comp1.triggerCollision(new CollisionEvent(comp1, comp2));
+                comp2.triggerCollision(new CollisionEvent(comp2, comp1));
+            }
+        } else if (comp1.shape instanceof BoxShape && comp2.shape instanceof CircleShape) {
+            if (comp1.go.position.x < comp2.go.position.x + comp2.shape.width &&
+                comp1.go.position.x + comp1.shape.width > comp2.go.position.x &&
+                comp1.go.position.y < comp2.go.position.y + comp2.shape.height &&
+                comp1.go.position.y + comp1.shape.height > comp2.go.position.y) {
+                if(comp1.go.getComponent(BallComponent) || comp2.go.getComponent(BallComponent)) {
+                    console.log(comp1, comp2);
+                }
+                comp1.triggerCollision(new CollisionEvent(comp1, comp2));
+                comp2.triggerCollision(new CollisionEvent(comp2, comp1));
+            }
+        } else if (comp2.shape instanceof BoxShape && comp1.shape instanceof CircleShape) {
+            if (comp1.go.position.x < comp2.go.position.x + comp2.shape.width &&
+                comp1.go.position.x + comp1.shape.width > comp2.go.position.x &&
+                comp1.go.position.y < comp2.go.position.y + comp2.shape.height &&
+                comp1.go.position.y + comp1.shape.height > comp2.go.position.y) {
+                if(comp1.go.getComponent(BallComponent) || comp2.go.getComponent(BallComponent)) {
+                    console.log(comp1, comp2);
+                }
+                comp1.triggerCollision(new CollisionEvent(comp1, comp2));
+                comp2.triggerCollision(new CollisionEvent(comp2, comp1));
+            }
+        }
 
+        return null;
     }
 
     private onSceneAtomAttached(atom: Atom) {

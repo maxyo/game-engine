@@ -45,7 +45,7 @@ export class LogicComponent extends Component {
     }
 
     public randomColor() {
-        let colors = ['blue', 'red', 'yellow', 'black', 'green', 'brown'];
-        this.go.getComponent(RenderComponent).color = colors[Math.floor(Math.random() * colors.length)];
+            let colors = ['blue', 'red', 'yellow', 'black', 'green', 'brown'];
+            this.go.getComponent(RenderComponent).color = colors[Math.floor(Math.random() * colors.length)];
     }
 }
