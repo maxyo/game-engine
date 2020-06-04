@@ -64,6 +64,10 @@ export class Serializable {
         if (netScheme) {
             for (let property of Object.keys(netScheme)) {
 
+                if (property === 'id' && !serializer.networkObjects.has(this[property])) {
+                    serializer.networkObjects.set(this[property], this);
+                }
+
                 // write the property to buffer
                 if (options.dry != true) {
                     serializer.writeDataView(dataView, this[property], bufferOffset + localBufferOffset, netScheme[property]);

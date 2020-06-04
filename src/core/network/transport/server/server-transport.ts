@@ -3,6 +3,7 @@ import {Client} from "../../client/client";
 import {Command} from "../../commands/command";
 import {Game} from "../../../game";
 import * as Websocket from 'ws';
+import {isDirectCommand} from "../../commands/idirect-command";
 
 export class ServerTransport extends Transport {
     clientsCollection: ClientCollection = new ClientCollection();
@@ -17,8 +18,8 @@ export class ServerTransport extends Transport {
     }
 
     broadcast(data: Command[]) {
-        this.clientsCollection.sockets.forEach((socket) => {
-            socket.send(this.packCommands(data));
+        this.clientsCollection.clients.forEach((client) => {
+            this.clientsCollection.getSocket(client.id).send(this.packCommands(this.collectForClient(data, client)));
         })
     }
 
@@ -51,6 +52,21 @@ export class ServerTransport extends Transport {
         this.trigger('disconnect', client);
         console.log('client disconnected (' + client.id + ')');
     }
+
+    collectForClient(commands: Command[], client: Client): Command[] {
+        let result = [];
+        commands.forEach((command) => {
+            if (isDirectCommand(command)) {
+                if (command.is(client)) {
+                    result.push(command)
+                }
+            } else {
+                result.push(command);
+            }
+        })
+        return result;
+    }
+
 }
 
 class ClientCollection {
@@ -67,7 +83,7 @@ class ClientCollection {
     }
 
     public getSocket(clientId: string): Websocket {
-        return this.sockets[clientId];
+        return this.sockets.get(clientId);
     }
 
     public getBySocket(socket: any): Client {

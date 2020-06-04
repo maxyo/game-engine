@@ -13,19 +13,10 @@ import {
     isUpdatableManager,
     IUpdatableManager
 } from "./manager/manager-types";
-import {AtomManager} from "./manager/atom-manager";
-import {LogicManager} from "./manager/logic-manager";
 import {Client} from "./network/client/client";
 import {EventSourceTrait} from "./event/event-source-trait";
-import {use} from "typescript-mix";
+import {Constructor, use} from "typescript-mix";
 import {Player} from "./player";
-import {PlayerManager} from "./manager/player-manager";
-import {InputManager} from "./manager/input-manager";
-import {RpcManager} from "./manager/rpc-manager";
-import {CanvasRenderManager} from "../render/manager/canvas-render-manager";
-import {GamePlayerManager} from "./manager/game-player-manager";
-import {BallManager} from "./manager/ball-manager";
-import {CollisionManager} from "./manager/collision-manager";
 
 export interface Game extends EventSourceTrait {
 
@@ -47,7 +38,7 @@ export class Game {
 
     private state: GameState = GameState.Preparing;
 
-    private readonly networkService: NetworkService;
+    public readonly networkService: NetworkService;
     public readonly transport: Transport;
 
     private scene: Scene = new Scene();
@@ -72,8 +63,6 @@ export class Game {
     constructor(config: IGameConfig) {
         this.gameMode = config.mode;
 
-        this.initManagers();
-
         Game.instance = this;
 
         if (this.gameMode === GameMode.Server) {
@@ -84,6 +73,8 @@ export class Game {
             this.processNetwork = this.processClientNetwork;
         }
         this.networkService = new NetworkService(this.transport);
+
+        this.initManagers(config);
     }
 
     public start() {
@@ -95,20 +86,9 @@ export class Game {
         return this.scene;
     }
 
-    private initManagers() {
-        if (this.gameMode === GameMode.Server) {
-            this.attachManager(new AtomManager(this));
-            this.attachManager(new LogicManager(this));
-            this.attachManager(new RpcManager(this));
-        } else {
-            this.attachManager(new PlayerManager(this));
-            this.attachManager(new AtomManager(this));
-            this.attachManager(new CanvasRenderManager(this));
-            this.attachManager(new LogicManager(this));
-            this.attachManager(new InputManager(this));
-            this.attachManager(new GamePlayerManager(this));
-            this.attachManager(new BallManager(this));
-            this.attachManager(new CollisionManager(this));
+    private initManagers(config: IGameConfig) {
+        for (let manager of config.managers) {
+            this.attachManager(new manager(this));
         }
 
         for (let manager of this.allManagers) {
@@ -241,6 +221,7 @@ export class Game {
 }
 
 export interface IGameConfig {
+    managers: Constructor<Manager>[],
     mode: GameMode,
     serverConfig?: {},   // if mode==Server
     scenePath?: string,             // if mode==Server
@@ -261,4 +242,4 @@ export enum GameState {
     Stopping
 }
 
-const MS_PER_TICK: number = 16;
+export const MS_PER_TICK: number = 16;

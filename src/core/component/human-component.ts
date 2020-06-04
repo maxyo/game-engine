@@ -4,15 +4,17 @@ import {IUpdatable} from "../scene/atom/interfaces/IUpdatable";
 import {Component} from "./component";
 import {registerClass} from "../network/transport/serializer";
 import {NetworkType} from "../network/transport/network-type";
+import shortid = require("shortid");
 
 @registerClass
 export class HumanComponent extends Component implements IUpdatable {
+    public readonly id;
     private _player: Player;
     private _velocity: Vector = new Vector();
     private inAir: number = 1;
     private groundY = 500;
-    public leftBorderX = 150;
-    public rightBorderX = 1000;
+    public leftBorderX = 152.5;
+    public rightBorderX = 875;
 
     private moveDir: number = 0;
 
@@ -20,11 +22,19 @@ export class HumanComponent extends Component implements IUpdatable {
         return this._velocity;
     }
 
+    public set moveDirection(value) {
+        this.moveDir = Math.clamp(this.moveDir + value, -1, 1);
+    }
+
     public static get netScheme() {
         return {
-            velocity: {type: NetworkType.CLASSINSTANCE},
+            ...super.netScheme,
+            _velocity: {type: NetworkType.CLASSINSTANCE},
             inAir: {type: NetworkType.INT8},
             groundY: {type: NetworkType.FLOAT32},
+            leftBorderX: {type: NetworkType.FLOAT32},
+            rightBorderX: {type: NetworkType.FLOAT32},
+            moveDir: {type: NetworkType.INT8},
         }
     }
 
@@ -32,17 +42,6 @@ export class HumanComponent extends Component implements IUpdatable {
         return [
             'jump'
         ];
-    }
-
-    public set player(value: Player) {
-        this._player = value;
-        this.player.attachEventListener('keydown', (event) => {
-            this.onKeyDown(event);
-        })
-    }
-
-    private onKeyDown(event) {
-        this.jump();
     }
 
     public update(tick_lag: number) {
@@ -84,21 +83,5 @@ export class HumanComponent extends Component implements IUpdatable {
         }
         this._velocity.y -= 20;
         this.inAir = 1;
-    }
-
-    public startMoveRight() {
-        this.moveDir = Math.min(this.moveDir + 1, 1);
-    }
-
-    public startMoveLeft() {
-        this.moveDir = Math.max(this.moveDir - 1, -1);
-    }
-
-    public stopMoveLeft() {
-        this.moveDir = Math.min(this.moveDir + 1, 1);
-    }
-
-    public stopMoveRight() {
-        this.moveDir = Math.max(this.moveDir - 1, -1);
     }
 }

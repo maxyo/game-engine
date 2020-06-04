@@ -2,7 +2,7 @@ import {Command} from "./commands/command";
 import {Transport} from "./transport/transport";
 
 export class NetworkService {
-    private commands: Command[] = [];
+    public readonly commands: Command[] = [];
     private transport: Transport;
 
     constructor(transport: Transport) {
@@ -20,6 +20,6 @@ export class NetworkService {
             return;
         }
         this.transport.broadcast(this.commands);
-        this.commands = [];
+        this.commands.length = 0;
     }
 }

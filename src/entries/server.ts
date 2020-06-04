@@ -1,10 +1,12 @@
 import {createServer} from "http";
 import {Game, GameMode, IGameConfig} from "../core/game";
-import {GameObject} from "../core/scene/atom/game-object/game-object";
-import {RenderComponent} from "../render/component/render-component";
 import {AtomManager} from "../core/manager/atom-manager";
-import {HumanComponent} from "../core/component/human-component";
-import {PlayerShape} from "../render/shape/player-shape";
+import {LogicManager} from "../core/manager/logic-manager";
+import {RpcManager} from "../core/manager/rpc-manager";
+import {BallManager} from "../core/manager/ball-manager";
+import {CollisionManager} from "../core/manager/collision-manager";
+import {GamePlayerManager} from "../core/manager/game-player-manager";
+import {PlayerManager} from "../core/manager/player-manager";
 
 let args = {};
 
@@ -18,7 +20,16 @@ let config: IGameConfig = {
     serverConfig: {
         server: createServer(),
         port: 3000,
-    }
+    },
+    managers: [
+        AtomManager,
+        LogicManager,
+        RpcManager,
+        BallManager,
+        CollisionManager,
+        GamePlayerManager,
+        PlayerManager,
+    ],
 };
 
 let game = new Game(config);
