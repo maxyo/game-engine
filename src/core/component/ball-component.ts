@@ -33,7 +33,7 @@ export class BallComponent extends Component implements IUpdatable {
 
         if (this.go.position.y >= 480) {
             this.velocity.y *= -0.6;
-            if (Math.abs(this.velocity.y) < 1) {
+            if (Math.abs(this.velocity.y) < 2) {
                 this.velocity.y = 0;
             }
         }

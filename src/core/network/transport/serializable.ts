@@ -1,6 +1,5 @@
 import {hashStr} from "../../util/functions";
 import {NetworkType} from "./network-type";
-import shortid = require("shortid");
 
 export interface Serializable {
     constructor: SerializablePrototype
@@ -8,7 +7,9 @@ export interface Serializable {
 
 export class Serializable {
 
-    static get netScheme() {return {}};
+    static get netScheme() {
+        return {}
+    };
 
     public constructor(properties = {}) {
         Object.assign(this, properties);
@@ -126,8 +127,19 @@ export class Serializable {
         let netScheme = this.constructor.netScheme;
         for (let p of Object.keys(netScheme)) {
 
-            if (netScheme[p].type === NetworkType.LIST)
+            if (netScheme[p].type === NetworkType.LIST) {
+                if (netScheme[p].itemType === NetworkType.CLASSINSTANCE) {
+                    for (let item of this[p]) {
+                        for (let item2 of other[p]) {
+                            if (item.id === item2.id) {
+                                item.syncTo(item2);
+                                break;
+                            }
+                        }
+                    }
+                }
                 continue;
+            }
             if (netScheme[p].type === NetworkType.CLASSINSTANCE) {
                 this[p].syncTo(other[p]);
                 continue;
@@ -143,6 +155,6 @@ export class Serializable {
 
 }
 
-export interface SerializablePrototype extends Function{
+export interface SerializablePrototype extends Function {
     netScheme: object;
 }

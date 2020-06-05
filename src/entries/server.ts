@@ -23,7 +23,6 @@ let config: IGameConfig = {
     },
     managers: [
         AtomManager,
-        LogicManager,
         RpcManager,
         BallManager,
         CollisionManager,

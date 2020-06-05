@@ -17,6 +17,7 @@ import {RpcManager} from "./rpc-manager";
 import {JumpCommand} from "../network/commands/jump-command";
 import {MoveCommand} from "../network/commands/move-command";
 import {setToHuman} from "../network/commands/set-to-human";
+import {Atom} from "../scene/atom/atom";
 
 export class GamePlayerManager extends Manager implements IUpdatableManager, INetworkManager {
 
@@ -61,6 +62,8 @@ export class GamePlayerManager extends Manager implements IUpdatableManager, INe
                     this.commands.push(new MoveCommand(-1));
                 }
             });
+            this.game.getScene().attachEventListener('attached', (event) => this.onSceneAtomAttached(event.data[0]));
+            this.game.getScene().attachEventListener('detached', (event) => this.onSceneAtomDetached(event.data[0]));
         } else {
             this.game.transport.attachEventListener('connect', (event) => {
                 let client = event.data[0];
@@ -224,5 +227,14 @@ export class GamePlayerManager extends Manager implements IUpdatableManager, INe
 
     public setLocalHuman(human: HumanComponent) {
         this.currentPlayer = human;
+    }
+
+    private onSceneAtomAttached(atom: Atom) {
+        if (atom.getComponent(HumanComponent)) {
+            this.allPlayers.push(atom.getComponent(HumanComponent));
+        }
+    }
+
+    private onSceneAtomDetached(atom: Atom) {
     }
 }
