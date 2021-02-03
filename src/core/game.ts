@@ -14,7 +14,6 @@ import {
     IUpdatableManager
 } from "./manager/manager-types";
 import {AtomManager} from "./manager/atom-manager";
-import {LogicManager} from "./manager/logic-manager";
 import {Client} from "./network/client/client";
 import {EventSourceTrait} from "./event/event-source-trait";
 import {use} from "typescript-mix";
@@ -22,9 +21,6 @@ import {Player} from "./player";
 import {PlayerManager} from "./manager/player-manager";
 import {InputManager} from "./manager/input-manager";
 import {RpcManager} from "./manager/rpc-manager";
-import {CanvasRenderManager} from "../render/manager/canvas-render-manager";
-import {GamePlayerManager} from "./manager/game-player-manager";
-import {BallManager} from "./manager/ball-manager";
 
 export interface Game extends EventSourceTrait {
 
@@ -71,8 +67,6 @@ export class Game {
     constructor(config: IGameConfig) {
         this.gameMode = config.mode;
 
-        this.initManagers();
-
         Game.instance = this;
 
         if (this.gameMode === GameMode.Server) {
@@ -85,7 +79,12 @@ export class Game {
         this.networkService = new NetworkService(this.transport);
     }
 
+    public init() {
+        this.initManagers();
+    }
+
     public start() {
+        this.init();
         this.state = GameState.Running;
         this.loop();
     }
@@ -95,20 +94,6 @@ export class Game {
     }
 
     private initManagers() {
-        if (this.gameMode === GameMode.Server) {
-            this.attachManager(new AtomManager(this));
-            this.attachManager(new LogicManager(this));
-            this.attachManager(new RpcManager(this));
-        } else {
-            this.attachManager(new PlayerManager(this));
-            this.attachManager(new AtomManager(this));
-            this.attachManager(new CanvasRenderManager(this));
-            this.attachManager(new LogicManager(this));
-            this.attachManager(new InputManager(this));
-            this.attachManager(new GamePlayerManager(this));
-            this.attachManager(new BallManager(this));
-        }
-
         for (let manager of this.allManagers) {
             manager.init();
         }

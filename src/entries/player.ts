@@ -9,4 +9,5 @@ let game = new Game({
 });
 
 game.getManager(PlayerManager).registerPlayer(new Player({id: 1, nickname: "maxyo"}));
+
 game.start();

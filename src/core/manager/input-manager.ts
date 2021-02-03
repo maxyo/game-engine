@@ -2,9 +2,6 @@ import {Manager} from "./manager";
 import {INetworkManager, IUpdatableManager} from "./manager-types";
 import {Command} from "../network/commands/command";
 import {Game} from "../game";
-import {ClickInputAction} from "../input/input-action";
-import {SpawnBoxCommand} from "../network/commands/spawn-box-command";
-import {ChangeColorCommand} from "./change-color-command";
 import {EventSourceTrait} from "../event/event-source-trait";
 import {use} from "typescript-mix";
 

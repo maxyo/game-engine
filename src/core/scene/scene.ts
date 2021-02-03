@@ -1,4 +1,4 @@
-import {Vector} from '../vector';
+import {Vector} from '../math/vector';
 import {Tile} from "./atom/tile/tile";
 import {GameObject} from "./atom/game-object/game-object";
 import {Atom} from "./atom/atom";

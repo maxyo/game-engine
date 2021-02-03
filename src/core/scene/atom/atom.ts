@@ -1,6 +1,6 @@
 import {Serializable} from '../../network/transport/serializable';
 import {Component} from "../../component/component";
-import {Vector} from '../../vector';
+import {Vector} from '../../math/vector';
 import {useTrait} from "../../util/functions";
 import {EventSourceTrait} from "../../event/event-source-trait";
 import {registerClass} from "../../network/transport/serializer";

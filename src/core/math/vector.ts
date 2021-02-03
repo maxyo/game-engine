@@ -1,22 +1,24 @@
-import {Serializable} from "./network/transport/serializable";
-import {useTrait} from "./util/functions";
-import {registerClass} from "./network/transport/serializer";
-import {NetworkType} from "./network/transport/network-type";
+import {Serializable} from "../network/transport/serializable";
+import {useTrait} from "../util/functions";
+import {registerClass} from "../network/transport/serializer";
+import {NetworkType} from "../network/transport/network-type";
 
 @registerClass
 export class Vector {
     @useTrait(Serializable) this;
     private _X: number;
     private _Y: number;
+    private _Z: number;
 
     static netScheme = {
-        _X: {type:NetworkType.FLOAT32},
-        _Y: {type:NetworkType.FLOAT32}
+        _X: {type: NetworkType.FLOAT32},
+        _Y: {type: NetworkType.FLOAT32}
     };
 
-    public constructor(x: number = 0, y: number = 0) {
+    public constructor(x: number = 0, y: number = 0, z: number = 0) {
         this._X = x;
         this._Y = y;
+        this._Z = z;
     }
 
     public get x(): number {
@@ -31,17 +33,27 @@ export class Vector {
         return this._Y;
     }
 
+    public get z(): number {
+        return this._Z;
+    }
+
     public set y(value: number) {
         this._Y = value;
+    }
+
+    public set z(value: number) {
+        this._Z = value;
     }
 
     public add(value: Vector | number): Vector {
         if (value instanceof Vector) {
             this._X += value.x;
             this._Y += value.y;
+            this._Z += value.z;
         } else {
             this._X += value;
             this._Y += value;
+            this._Z += value;
         }
         return this;
     }
@@ -50,9 +62,11 @@ export class Vector {
         if (value instanceof Vector) {
             this._X *= value.x;
             this._Y *= value.y;
+            this._Z *= value.z;
         } else {
             this._X *= value;
             this._Y *= value;
+            this._Z *= value;
         }
         return this;
     }
