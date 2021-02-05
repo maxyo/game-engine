@@ -6,9 +6,9 @@ import {NetworkType} from "../network/transport/network-type";
 @registerClass
 export class Vector {
     @useTrait(Serializable) this;
-    private _X: number;
-    private _Y: number;
-    private _Z: number;
+    protected _X: number;
+    protected _Y: number;
+    protected _Z: number;
 
     static netScheme = {
         _X: {type: NetworkType.FLOAT32},
@@ -45,15 +45,41 @@ export class Vector {
         this._Z = value;
     }
 
-    public add(value: Vector | number): Vector {
-        if (value instanceof Vector) {
-            this._X += value.x;
-            this._Y += value.y;
-            this._Z += value.z;
+    public set(x: Vector | number, y: number = null, z: number = null): Vector {
+        if (x instanceof Vector) {
+            this._X = x.x;
+            this._Y = x.y;
+            this._Z = x.z;
         } else {
-            this._X += value;
-            this._Y += value;
-            this._Z += value;
+            if (y === null && z === null) {
+                this._X = x;
+                this._Y = x;
+                this._Z = x;
+            } else {
+                this._X = x;
+                this._Y = y;
+                this._Z = z;
+            }
+        }
+        return this;
+    }
+
+
+    public add(x: Vector | number, y: number = null, z: number = null): Vector {
+        if (x instanceof Vector) {
+            this._X += x.x;
+            this._Y += x.y;
+            this._Z += x.z;
+        } else {
+            if (y === null && z === null) {
+                this._X += x;
+                this._Y += x;
+                this._Z += x;
+            } else {
+                this._X += x;
+                this._Y += y;
+                this._Z += z;
+            }
         }
         return this;
     }
@@ -89,6 +115,12 @@ export class Vector {
 
     public copy(): Vector {
         return new Vector(this._X, this._Y);
+    }
+
+    [Symbol.iterator] = function* () {
+        yield this.x;
+        yield this.y;
+        yield this.z;
     }
 }
 

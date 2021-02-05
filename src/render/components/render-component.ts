@@ -9,9 +9,7 @@ import {GameObject} from "../../core/scene/atom/game-object/game-object";
 @registerClass
 export class RenderComponent extends Component {
 
-    _object: Object3D;
-
-    go: GameObject;
+    private _object: Object3D;
 
     set object(obj: Object3D) {
         let self = this;

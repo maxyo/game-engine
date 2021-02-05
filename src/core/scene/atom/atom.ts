@@ -23,14 +23,17 @@ export abstract class Atom extends Serializable {
 
 
     public readonly position: Vector = new Vector;
-
+    public readonly scale: Vector = new Vector(1, 1, 1);
+    public readonly rotation: Vector = new Vector(0,0,1);
     public readonly components: Component[] = [];
 
     static get netScheme() {
         return {
             id: {type: NetworkType.STRING},
             position: {type: NetworkType.CLASSINSTANCE},
-            components: {type: NetworkType.LIST, itemType: NetworkType.CLASSINSTANCE}
+            components: {type: NetworkType.LIST, itemType: NetworkType.CLASSINSTANCE},
+            scale: {type: NetworkType.CLASSINSTANCE},
+            rotation: {type: NetworkType.CLASSINSTANCE},
         };
     };
 

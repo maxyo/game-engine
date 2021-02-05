@@ -24,6 +24,7 @@
     "@types/shortid": "0.0.29",
     "@types/websocket": "^1.0.0",
     "@types/ws": "^7.2.4",
+    "ammo.js": "0.0.10",
     "msgpack-lite": "^0.1.26",
     "shortid": "^2.2.15",
     "socket.io": "^2.3.0",
