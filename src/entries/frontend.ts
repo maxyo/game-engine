@@ -13,13 +13,13 @@ import {
     Vector3,
     WebGLRenderer
 } from "three";
-import {GameObject} from "../core/scene/atom/game-object/game-object";
 import {RenderComponent} from "../render/components/render-component";
-import {AmmojsPhysicsManager} from "../physics/managers/ammojs-physics-manager";
-import {RigidBodyComponent} from "../physics/components/rigid-body-component";
+import {AmmojsPhysicsManager} from "../physics/manager/ammojs-physics-manager";
+import {RigidBodyComponent} from "../physics/component/rigid-body-component";
 import {Vector} from "../core/math/vector";
 import btCollisionObject = Ammo.btCollisionObject;
 import * as Ammo from "ammo.js/ammo";
+import {Atom} from "../core/scene/atom";
 
 let game = new Game({
     mode: GameMode.Front,
@@ -38,20 +38,20 @@ game.start();
 objs.forEach(obj => game.getScene().attach(obj))
 
 
-function addObjects(game: Game): GameObject[] {
+function addObjects(game: Game): Atom[] {
 
     let res = [];
     for (let i = -1; i <= 1; i++) {
-        let go = new GameObject();
+        let go = new Atom();
 
         let comp = go.addComponent(RenderComponent);
         let mesh = comp.object = new Mesh();
         mesh.geometry = new BoxGeometry(1, 1, 1);
         mesh.material = new MeshNormalMaterial();
-        // go.position.x = i / 2;
-        // go.position.y = i + 2;
-        // go.position.z = i / 2;
-        // go.position.z = i*2;
+        // go.transform.position.x = i / 2;
+        // go.transform.position.y = i + 2;
+        // go.transform.position.z = i / 2;
+        // go.transform.position.z = i*2;
         let phys = go.addComponent(RigidBodyComponent);
         phys.rb.setCollisionFlags(0);
         res.push(go);
@@ -61,7 +61,7 @@ function addObjects(game: Game): GameObject[] {
 }
 
 function initGround() {
-    let go = new GameObject();
+    let go = new Atom();
 
     let comp = go.addComponent(RenderComponent);
     let mesh = comp.object = new Mesh();
@@ -73,17 +73,17 @@ function initGround() {
     groundTexture.anisotropy = 16;
     groundTexture.encoding = sRGBEncoding;
 
-
     let material = new MeshLambertMaterial({
-        map: groundTexture,
+        map: groundTexture
     });
+
     mesh.material = material;
-    go.position.x = 0;
-    go.position.y = -10;
-    // go.position.z = i*2;
+    go.transform.position.x = 0;
+    go.transform.position.y = -100;
+    // go.transform.position.z = i*2;
     let phys = go.addComponent(RigidBodyComponent);
-    phys.rb.setCollisionShape(new Ammo.btBoxShape(new Ammo.btVector3(9999, 2, 9999)));
-    phys.rb.setCollisionFlags(2);
+    phys.rb.setCollisionShape(new Ammo.btBoxShape(new Ammo.btVector3(9999, 20, 9999)));
+    phys.rb.setCollisionFlags(4);
     return go;
 }
 

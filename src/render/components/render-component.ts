@@ -1,10 +1,8 @@
 import {Component} from "../../core/component/component";
-import {registerClass} from "../../core/network/transport/serializer";
-import {NetworkType} from "../../core/network/transport/network-type";
+import {registerClass} from "../../network/transport/serializer";
+import {NetworkType} from "../../network/transport/network-type";
 import {BufferGeometry, Material, Object3D, Vector3} from "three";
 import {use} from "typescript-mix";
-import {IUpdatable} from "../../core/scene/atom/interfaces/IUpdatable";
-import {GameObject} from "../../core/scene/atom/game-object/game-object";
 
 @registerClass
 export class RenderComponent extends Component {
@@ -15,17 +13,17 @@ export class RenderComponent extends Component {
         let self = this;
         Reflect.defineProperty(obj, 'position', {
             get(): any {
-                return self.go.position;
+                return self.go.transform.position;
             }
         });
         Reflect.defineProperty(obj, 'rotation', {
             get(): any {
-                return self.go.rotation;
+                return self.go.transform.rotation;
             }
         });
         Reflect.defineProperty(obj, 'scale', {
             get(): any {
-                return self.go.scale;
+                return self.go.transform.scale;
             }
         });
         this._object = obj;
@@ -39,7 +37,7 @@ export class RenderComponent extends Component {
         return {
             ...super.netScheme,
             color: {type: NetworkType.STRING},
-            shape: {type: NetworkType.CLASSINSTANCE}
+            shape: {type: NetworkType.SERIALIZABLE_OBJECT}
         };
     };
 }

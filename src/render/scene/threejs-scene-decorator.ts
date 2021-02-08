@@ -5,7 +5,7 @@ import {
 import {Scene as OurScene} from "../../core/scene/scene";
 import {Scene as TheirScene} from "three";
 import {use} from "typescript-mix";
-import {Atom} from "../../core/scene/atom/atom";
+import {Atom} from "../../core/scene/atom";
 
 export interface ThreejsSceneDecorator extends OurScene, TheirScene {
     attach(atom: Atom | Object3D);

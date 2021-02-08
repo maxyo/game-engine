@@ -1,7 +1,7 @@
-import {Serializable} from "../network/transport/serializable";
-import {useTrait} from "../util/functions";
-import {registerClass} from "../network/transport/serializer";
-import {NetworkType} from "../network/transport/network-type";
+import {Serializable} from "../../network/transport/serializable";
+import {useTrait} from "../util/utils";
+import {registerClass} from "../../network/transport/serializer";
+import {NetworkType} from "../../network/transport/network-type";
 
 @registerClass
 export class Vector {
@@ -122,12 +122,15 @@ export class Vector {
         yield this.y;
         yield this.z;
     }
+    static readonly ZERO = new Vector(0, 0).finalize();
+    static readonly ONE = new Vector(1, 1).finalize();
+    static readonly UP = new Vector(0, 1).finalize();
+    static readonly RIGHT = new Vector(1, 0).finalize();
+    static readonly DOWN = new Vector(0, -1).finalize();
+    static readonly LEFT = new Vector(-1, 0).finalize();
+
+    public finalize() {
+        //todo implement
+        return this;
+    }
 }
-
-export const ZERO = new Vector(0, 0);
-export const ONE = new Vector(1, 1);
-
-export const UP = new Vector(0, 1);
-export const RIGHT = new Vector(1, 0);
-export const DOWN = new Vector(0, -1);
-export const LEFT = new Vector(-1, 0);

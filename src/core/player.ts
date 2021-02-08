@@ -1,9 +1,9 @@
-import {Serializable} from "./network/transport/serializable";
-import {NetworkType} from "./network/transport/network-type";
+import {Serializable} from "../network/transport/serializable";
+import {NetworkType} from "../network/transport/network-type";
 import {InputAction, InputActionType} from "./input/input-action";
 import {EventSourceTrait} from "./event/event-source-trait";
 import {use} from "typescript-mix";
-import {registerClass} from "./network/transport/serializer";
+import {registerClass} from "../network/transport/serializer";
 
 export interface Player extends EventSourceTrait {
 

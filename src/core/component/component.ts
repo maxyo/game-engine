@@ -1,9 +1,9 @@
-import {Atom} from "../scene/atom/atom";
-import {Serializable} from "../network/transport/serializable";
+import {Atom} from "../scene/atom";
+import {Serializable} from "../../network/transport/serializable";
 import {EventSourceTrait} from "../event/event-source-trait";
-import {useTrait} from "../util/functions";
-import {registerClass} from "../network/transport/serializer";
-import {NetworkType} from "../network/transport/network-type";
+import {useTrait} from "../util/utils";
+import {registerClass} from "../../network/transport/serializer";
+import {NetworkType} from "../../network/transport/network-type";
 
 export interface Component extends EventSourceTrait {
 }

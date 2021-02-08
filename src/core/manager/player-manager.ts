@@ -1,8 +1,8 @@
 import {Manager} from "./manager";
 import {INetworkManager} from "./manager-types";
-import {Command} from "../network/commands/command";
+import {Command} from "../../network/command/command";
 import {Player} from "../player";
-import {InitPlayerCommand} from "../network/commands/init-player-command";
+import {InitPlayerCommand} from "../../network/command/init-player-command";
 
 export class PlayerManager extends Manager implements INetworkManager {
     private commands: Command[] = [];

@@ -1,6 +1,6 @@
-import {NetworkType} from "../network/transport/network-type";
-import {registerClass} from "../network/transport/serializer";
-import {Serializable} from "../network/transport/serializable";
+import {NetworkType} from "../../network/transport/network-type";
+import {registerClass} from "../../network/transport/serializer";
+import {Serializable} from "../../network/transport/serializable";
 
 @registerClass
 export class InputAction extends Serializable {

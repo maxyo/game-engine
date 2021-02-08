@@ -1,9 +1,6 @@
-import {Vector} from '../math/vector';
-import {Tile} from "./atom/tile/tile";
-import {GameObject} from "./atom/game-object/game-object";
-import {Atom} from "./atom/atom";
+import {Atom} from "./atom";
 import {EventSourceTrait} from "../event/event-source-trait";
-import {useTrait} from "../util/functions";
+import {useTrait} from "../util/utils";
 
 export interface Scene extends EventSourceTrait {
 
@@ -11,37 +8,22 @@ export interface Scene extends EventSourceTrait {
 
 export class Scene {
     @useTrait(EventSourceTrait)
-    private objects: Set<GameObject> = new Set<GameObject>();
-    private tiles: Tile[] = [];
-    private size: Vector;
+    private objects: Set<Atom> = new Set<Atom>();
 
-    public getObjects(): Set<GameObject> {
+    public getObjects(): Set<Atom> {
         return this.objects;
     }
 
-    public getTiles(): Tile[] {
-        return this.tiles;
-    }
-
     public attach(atom: Atom) {
-        if (atom instanceof GameObject) {
-            this.objects.add(atom as GameObject);
-        }
-        if (atom instanceof Tile) {
-            this.tiles.push(atom as Tile);
+        if (atom instanceof Atom) {
+            this.objects.add(atom as Atom);
         }
         this.trigger('attached', atom);
     }
 
     public detach(atom: Atom) {
-        if (atom instanceof GameObject) {
+        if (atom instanceof Atom) {
             this.objects.delete(atom);
-        }
-        if (atom instanceof Tile) {
-            let i = this.tiles.indexOf(atom);
-            if (i !== -1) {
-                this.tiles.slice(i, 1);
-            }
         }
         this.trigger('detached', atom);
     }

@@ -1,6 +1,6 @@
 import {Game} from "../game";
 import {Component} from "../component/component";
-import {Atom} from "../scene/atom/atom";
+import {Atom} from "../scene/atom";
 import {RenderComponent} from "../../render/components/render-component";
 
 export abstract class Manager {

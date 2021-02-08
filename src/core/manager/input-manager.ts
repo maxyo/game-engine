@@ -1,6 +1,6 @@
 import {Manager} from "./manager";
 import {INetworkManager, IUpdatableManager} from "./manager-types";
-import {Command} from "../network/commands/command";
+import {Command} from "../../network/command/command";
 import {Game} from "../game";
 import {EventSourceTrait} from "../event/event-source-trait";
 import {use} from "typescript-mix";

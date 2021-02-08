@@ -1,13 +1,11 @@
 import {Manager} from "./manager";
-import {CreateAtomCommand} from "../network/commands/create-atom-command";
-import {SyncAtomCommand} from "../network/commands/sync-atom-command";
+import {CreateAtomCommand} from "../../network/command/atom/create-atom-command";
+import {SyncAtomCommand} from "../../network/command/atom/sync-atom-command";
 import {Game} from "../game";
-import {Command} from "../network/commands/command";
-import {GameObject} from "../scene/atom/game-object/game-object";
-import {Atom} from "../scene/atom/atom";
-import {DeleteAtomCommand} from "../network/commands/delete-atom-command";
-import {Tile} from "../scene/atom/tile/tile";
-import {Client} from "../network/client/client";
+import {Command} from "../../network/command/command";
+import {Atom} from "../scene/atom";
+import {DeleteAtomCommand} from "../../network/command/atom/delete-atom-command";
+import {Client} from "../../network/client/client";
 
 export class AtomManager extends Manager {
     private createCommand: CreateAtomCommand = new CreateAtomCommand;
@@ -24,8 +22,7 @@ export class AtomManager extends Manager {
         this.game.getScene().attachEventListener('attached', (event) => this.onSceneAtomAttached(event.data));
         this.game.getScene().attachEventListener('detached', (event) => this.onSceneAtomDetached(event.data));
 
-        this.game.getScene().getObjects().forEach((obj: GameObject) => this.onSceneAtomAttached(obj));
-        this.game.getScene().getTiles().forEach((obj: Tile) => this.onSceneAtomAttached(obj));
+        this.game.getScene().getObjects().forEach((obj: Atom) => this.onSceneAtomAttached(obj));
 
         if (!this.game.isServer) {
             Reflect.deleteProperty(this.constructor.prototype, 'update');

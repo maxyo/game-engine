@@ -1,8 +1,8 @@
 import {Manager} from "./manager";
 import {ISelectiveNetworkManager} from "./manager-types";
-import {Command} from "../network/commands/command";
-import {Client} from "../network/client/client";
-import {ComponentRpcCommand} from "../network/commands/component-rpc-command";
+import {Command} from "../../network/command/command";
+import {Client} from "../../network/client/client";
+import {ComponentRpcCommand} from "../../network/command/component-rpc-command";
 import {Component} from "../component/component";
 
 export class RpcManager extends Manager implements ISelectiveNetworkManager {
@@ -17,17 +17,17 @@ export class RpcManager extends Manager implements ISelectiveNetworkManager {
             functionKey: target.constructor['rpcMethods'].indexOf(functionName)
         });
         this.allCommands.push(command)
-        // if (this.commands.has(client)) {
-        //     this.commands.get(client).push(command);
+        // if (this.command.has(client)) {
+        //     this.command.get(client).push(command);
         // } else {
-        //     this.commands.set(client, [command]);
+        //     this.command.set(client, [command]);
         // }
     }
 
     getCommandsForClient(client: Client): Command[] | null {
-        // if (this.commands.has(client)) {
-        //     let result = this.commands.get(client);
-        //     this.commands.set(client, []);
+        // if (this.command.has(client)) {
+        //     let result = this.command.get(client);
+        //     this.command.set(client, []);
         //     return result;
         // }
         // return null;

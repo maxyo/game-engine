@@ -1,10 +1,10 @@
-import {ServerTransport} from "./network/transport/server/server-transport";
-import {Transport} from "./network/transport/transport";
+import {ServerTransport} from "../network/transport/server/server-transport";
+import {Transport} from "../network/transport/transport";
 import {Manager} from "./manager/manager";
-import {NetworkService} from "./network/network-service";
+import {NetworkService} from "../network/network-service";
 import {Scene} from "./scene/scene";
-import {ClientTransport} from "./network/transport/client/client-transport";
-import {sleep} from "./util/functions";
+import {ClientTransport} from "../network/transport/client/client-transport";
+import {sleep} from "./util/utils";
 import {
     INetworkManager,
     ISelectiveNetworkManager,
@@ -14,7 +14,7 @@ import {
     IUpdatableManager
 } from "./manager/manager-types";
 import {AtomManager} from "./manager/atom-manager";
-import {Client} from "./network/client/client";
+import {Client} from "../network/client/client";
 import {EventSourceTrait} from "./event/event-source-trait";
 import {use} from "typescript-mix";
 import {Player} from "./player";
