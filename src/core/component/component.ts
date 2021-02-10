@@ -4,6 +4,7 @@ import {EventSourceTrait} from "../event/event-source-trait";
 import {useTrait} from "../util/utils";
 import {registerClass} from "../../network/transport/serializer";
 import {NetworkType} from "../../network/transport/network-type";
+import {Game} from "../game";
 
 export interface Component extends EventSourceTrait {
 }
@@ -25,6 +26,12 @@ export class Component extends Serializable {
         super();
         this.go = go;
     }
+
+    public init(game: Game) {
+        // todo add init() calling on go initializing.
+        return;
+    }
+
 
     public destroy() {
         this.trigger('destroy');

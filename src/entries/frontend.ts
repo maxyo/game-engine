@@ -41,12 +41,15 @@ objs.forEach(obj => game.getScene().attach(obj))
 function addObjects(game: Game): Atom[] {
 
     let res = [];
-    for (let i = -1; i <= 1; i++) {
+    for (let i = -5; i <= 5; i++) {
         let go = new Atom();
 
         let comp = go.addComponent(RenderComponent);
         let mesh = comp.object = new Mesh();
-        mesh.geometry = new BoxGeometry(1, 1, 1);
+        // go.transform.position.y += ;
+        go.transform.position.x = i;
+        go.transform.position.y = Math.abs(i)%2*Math.random()*10;
+        mesh.geometry = new BoxGeometry(1, Math.max(Math.abs(i),1), Math.max(Math.abs(i),1));
         mesh.material = new MeshNormalMaterial();
         // go.transform.position.x = i / 2;
         // go.transform.position.y = i + 2;
@@ -56,7 +59,7 @@ function addObjects(game: Game): Atom[] {
         phys.rb.setCollisionFlags(0);
         res.push(go);
     }
-
+console.log(res);
     return res;
 }
 
@@ -73,17 +76,18 @@ function initGround() {
     groundTexture.anisotropy = 16;
     groundTexture.encoding = sRGBEncoding;
 
-    let material = new MeshLambertMaterial({
+    let material = new MeshStandardMaterial({
         map: groundTexture
     });
 
     mesh.material = material;
     go.transform.position.x = 0;
-    go.transform.position.y = -100;
+    go.transform.position.y = -2;
     // go.transform.position.z = i*2;
     let phys = go.addComponent(RigidBodyComponent);
-    phys.rb.setCollisionShape(new Ammo.btBoxShape(new Ammo.btVector3(9999, 20, 9999)));
-    phys.rb.setCollisionFlags(4);
+    phys.rb.setCollisionShape(new Ammo.btBoxShape(new Ammo.btVector3(9999, 1, 9999)));
+    phys.rb.setCollisionFlags(3);
+    phys.rb.setMassProps(0);
     return go;
 }
 
