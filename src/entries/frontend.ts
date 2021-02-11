@@ -56,7 +56,6 @@ function addObjects(game: Game): Atom[] {
         // go.transform.position.z = i / 2;
         // go.transform.position.z = i*2;
         let phys = go.addComponent(RigidBodyComponent);
-        phys.rb.setCollisionFlags(0);
         res.push(go);
     }
 console.log(res);
@@ -85,9 +84,7 @@ function initGround() {
     go.transform.position.y = -2;
     // go.transform.position.z = i*2;
     let phys = go.addComponent(RigidBodyComponent);
-    phys.rb.setCollisionShape(new Ammo.btBoxShape(new Ammo.btVector3(9999, 1, 9999)));
-    phys.rb.setCollisionFlags(3);
-    phys.rb.setMassProps(0);
+    phys.rb.mass = 0;
     return go;
 }
 

@@ -28,7 +28,7 @@ export class Component extends Serializable {
     }
 
     public init(game: Game) {
-        // todo add init() calling on go initializing.
+        // todo add init() calling on atom initializing.
         return;
     }
 

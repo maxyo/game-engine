@@ -1,45 +1,69 @@
 import {Vector} from "../math/vector";
 import * as Ammo from "ammo.js/ammo";
+import {EventSourceTrait} from "../../core/event/event-source-trait";
+import {use} from "typescript-mix";
+
+export interface Shape extends EventSourceTrait {
+
+}
 
 export abstract class Shape {
-    protected shape: Ammo.btCollisionShape;
+    @use(EventSourceTrait) this;
 
-    public set scale(val: Vector) {
-        this.shape.setLocalScaling(val);
+    private _scale: Vector = new Vector();
+    private _margin: number = 1;
+
+    public set scale(value: Vector) {
+        this._scale = value;
+        this.trigger('setScale', value);
     }
 
-    public get scale() {
-        let tmp = this.shape.getLocalScaling();
-        return new Vector(tmp.x(), tmp.y(), tmp.z());
+    public get scale(): Vector {
+        return this._scale;
     }
 
-    calculateLocalInertia(mass: number, inertia: Vector): void {
-        this.shape.calculateLocalInertia(mass, inertia);
-    }
-
-    public set margin(val: number) {
-        this.shape.setMargin(val);
+    public set margin(value: number) {
+        this._margin = value;
+        this.trigger('setMargin', value);
     }
 
     public get margin(): number {
-        return this.shape.getMargin();
+        return this._margin;
     }
 }
 
 export class BoxShape extends Shape {
-    protected shape: Ammo.btBoxShape;
+    private _size: Vector;
+
+    public get size() {
+        return this._size;
+    }
+
+    public set size(value) {
+        this._size = value;
+        this.trigger('setSize', value);
+    }
 
     constructor(size: Vector) {
         super();
-        this.shape = new Ammo.btBoxShape(size);
+        this._size = size;
     }
 }
 
 export class SphereShape extends Shape {
-    protected shape: Ammo.btSphereShape;
+    private _radius: number;
 
     constructor(radius: number) {
         super();
-        this.shape = new Ammo.btSphereShape(radius);
+        this._radius = radius;
+    }
+
+    public get radius() {
+        return this._radius;
+    }
+
+    public set radius(value) {
+        this._radius = value;
+        this.trigger('setRadius', value);
     }
 }

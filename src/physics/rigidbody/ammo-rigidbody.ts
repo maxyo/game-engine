@@ -2,10 +2,12 @@ import {RigidbodyInterface} from "./rigidbody-interface";
 import btDefaultMotionState = Ammo.btDefaultMotionState;
 import {Vector} from "../math/vector";
 import {Shape} from "../shape/shape";
+import {ShapeExporter} from "../integration/ammojs/shape-exporter";
 
 export class AmmoRigidbody implements RigidbodyInterface {
 
     private readonly rb: Ammo.btRigidBody;
+    private _shape: Shape;
     private _mass: number;
 
     constructor() {
@@ -65,12 +67,12 @@ export class AmmoRigidbody implements RigidbodyInterface {
     }
 
     get shape(): Shape {
-        // todo implement
-        throw new Error();
+        return this._shape;
     }
 
     set shape(shape) {
-        // todo implement
+        this._shape = shape;
+        this.rb.setCollisionShape(ShapeExporter.export(shape));
     }
 
     applyImpulse(impulse: Vector, point: Vector) {
