@@ -1,12 +1,12 @@
 import {Component} from "../../core/component/component";
 import {Atom} from "../../core/scene/atom";
 import * as Ammo from "ammo.js/ammo";
-import {RigidbodyInterface} from "../rigidbody/rigidbody-interface";
-import {AmmoRigidbody} from "../rigidbody/ammo-rigidbody";
+import {RigidBodyInterface} from "../rigidbody/rigid-body-interface";
+import {AmmoRigidBody} from "../integration/ammojs/ammo-rigid-body";
 
 // @ts-ignore
 export class RigidBodyComponent extends Component implements IUpdatable {
-    public readonly rb: RigidbodyInterface;
+    public readonly rb: RigidBodyInterface;
 
     private static _emptyShape;
 
@@ -14,7 +14,7 @@ export class RigidBodyComponent extends Component implements IUpdatable {
         super(atom);
 
         // todo move rb creating to init()
-        this.rb = new AmmoRigidbody();
+        this.rb = new AmmoRigidBody();
 
         this.rb.position.set(
             this.go.transform.position.x,

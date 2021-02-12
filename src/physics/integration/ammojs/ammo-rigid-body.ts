@@ -1,11 +1,11 @@
-import {RigidbodyInterface} from "./rigidbody-interface";
+import {RigidBodyInterface} from "../../rigidbody/rigid-body-interface";
 import btDefaultMotionState = Ammo.btDefaultMotionState;
-import {Vector} from "../math/vector";
-import {Shape} from "../shape/shape";
-import {ShapeExporter} from "../integration/ammojs/shape-exporter";
+import {Vector} from "../../math/vector";
+import {Shape} from "../../shape/shape";
+import {AmmoShapeExporter} from "./ammo-shape-exporter";
 
-export class AmmoRigidbody implements RigidbodyInterface {
-
+export class AmmoRigidBody implements RigidBodyInterface {
+// todo change to component
     private readonly rb: Ammo.btRigidBody;
     private _shape: Shape;
     private _mass: number;
@@ -72,7 +72,7 @@ export class AmmoRigidbody implements RigidbodyInterface {
 
     set shape(shape) {
         this._shape = shape;
-        this.rb.setCollisionShape(ShapeExporter.export(shape));
+        this.rb.setCollisionShape(AmmoShapeExporter.export(shape));
     }
 
     applyImpulse(impulse: Vector, point: Vector) {

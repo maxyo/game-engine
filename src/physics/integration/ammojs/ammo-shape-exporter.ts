@@ -1,6 +1,6 @@
 import {BoxShape, Shape, SphereShape} from "../../shape/shape";
 
-export class ShapeExporter {
+export class AmmoShapeExporter {
     static export(shape: Shape) {
         if (shape instanceof BoxShape) {
             let newShape = new Ammo.btBoxShape(shape.size);

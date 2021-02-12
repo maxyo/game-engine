@@ -14,7 +14,7 @@ import {
     WebGLRenderer
 } from "three";
 import {RenderComponent} from "../render/components/render-component";
-import {AmmojsPhysicsManager} from "../physics/manager/ammojs-physics-manager";
+import {PhysicsManagerInterface} from "../physics/integration/ammojs/ammo-physics-manager";
 import {RigidBodyComponent} from "../physics/component/rigid-body-component";
 import {Vector} from "../core/math/vector";
 import btCollisionObject = Ammo.btCollisionObject;
@@ -89,7 +89,7 @@ function initGround() {
 }
 
 function initPhysics(game: Game) {
-    let phys = game.addManager(AmmojsPhysicsManager);
+    let phys = game.addManager(PhysicsManagerInterface);
 }
 
 function initThreejs(game: Game) {

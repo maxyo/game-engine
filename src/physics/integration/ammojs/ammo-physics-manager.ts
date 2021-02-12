@@ -1,11 +1,13 @@
-import {Manager} from "../../core/manager/manager";
-import {IUpdatableManager} from "../../core/manager/manager-types";
-import {RigidBodyComponent} from "../component/rigid-body-component";
-import * as Ammo from "ammo.js/ammo";
-import {Atom} from "../../core/scene/atom";
-import {PhysicsManager} from "./physics-manager";
+import {Manager} from "../../../core/manager/manager";
+import {IUpdatableManager} from "../../../core/manager/manager-types";
+import {RigidBodyComponent} from "../../component/rigid-body-component";
+// import * as Ammo from "ammo.js/ammo";
+import {Atom} from "../../../core/scene/atom";
+import {AbstractPhysicsManager} from "../../manager/abstract-physics-manager";
+import btTypedConstraint = Ammo.btTypedConstraint;
+import {AmmoRigidBody} from "./ammo-rigid-body";
 
-export class AmmojsPhysicsManager extends PhysicsManager implements IUpdatableManager, PhysicsManager {
+export class AmmoPhysicsManager extends AbstractPhysicsManager implements IUpdatableManager {
 
     private collisionConfiguration: Ammo.btDefaultCollisionConfiguration;
     private dispatcher: Ammo.btCollisionDispatcher;

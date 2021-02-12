@@ -1,13 +1,13 @@
-import {RigidbodyInterface} from "../rigidbody/rigidbody-interface";
+import {RigidBodyInterface} from "../rigidbody/rigid-body-interface";
 import {Shape} from "../shape/shape";
-import {PhysicsManager} from "../manager/physics-manager";
+import {AbstractPhysicsManager} from "../manager/abstract-physics-manager";
 
 export abstract class AbstractPhysicsElementsFactory {
-    public abstract buildRigidBody(): RigidbodyInterface;
+    public abstract buildRigidBody(): RigidBodyInterface;
 
     public abstract buildShape(): Shape;
 
     public abstract buildJoint();
 
-    public abstract buildManager(): PhysicsManager;
+    public abstract buildManager(): AbstractPhysicsManager;
 }

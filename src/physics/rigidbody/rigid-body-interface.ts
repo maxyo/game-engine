@@ -1,7 +1,8 @@
 import {Vector} from "../math/vector";
 import {Shape} from "../shape/shape";
 
-export interface RigidbodyInterface {
+export interface RigidBodyInterface {
+    // todo change to component interface
     mass: number;
     position: Vector;
     gravity: Vector;
