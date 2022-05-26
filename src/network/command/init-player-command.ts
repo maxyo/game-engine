@@ -7,7 +7,11 @@ import {NetworkType} from "../transport/network-type";
 
 @registerClass
 export class InitPlayerCommand extends ClientCommand {
-    player: Player
+    constructor(
+        readonly player: Player
+    ) {
+        super()
+    }
 
     static get netScheme() {
         return {

@@ -1,6 +1,5 @@
 import {hashStr} from "../../core/util/utils";
 import {NetworkType} from "./network-type";
-import shortid = require("shortid");
 
 export interface Serializable {
     constructor: SerializablePrototype
@@ -8,7 +7,9 @@ export interface Serializable {
 
 export class Serializable {
 
-    static get netScheme() {return {}};
+    static get netScheme() {
+        return {}
+    };
 
     public constructor(properties = {}) {
         Object.assign(this, properties);
@@ -139,6 +140,6 @@ export class Serializable {
 
 }
 
-export interface SerializablePrototype extends Function{
+export interface SerializablePrototype extends Function {
     netScheme: object;
 }

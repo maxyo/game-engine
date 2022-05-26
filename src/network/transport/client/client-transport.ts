@@ -34,7 +34,6 @@ export class ClientTransport extends Transport {
             data.unshift(...this.stack);
             this.stack = [];
         }
-        console.log(data);
         this.socket.send(this.packCommands(data));
     }
 }

@@ -95,9 +95,8 @@ class Serializer {
         } else if (netSchemProp.type === NetworkType.UINT8) {
             dataView.setUint8(bufferOffset, value);
         } else if (netSchemProp.type === NetworkType.STRING) {
-
             //   MAX_UINT_16 is a reserved (length) value which indicates string hasn't changed
-            if (value === null) {
+            if (value === null || value === undefined) {
                 dataView.setUint16(bufferOffset, MAX_UINT_16);
             } else {
                 let strLen = value.length;
@@ -248,7 +247,7 @@ class Serializer {
         } else if (netSchemProp.type === NetworkType.IMAGE) {
             let height = dataView.getFloat32(bufferOffset);
             let width = dataView.getFloat32(bufferOffset);
-            bufferSize = Float32Array.BYTES_PER_ELEMENT*2;
+            bufferSize = Float32Array.BYTES_PER_ELEMENT * 2;
             let i = 0;
             let imageBufferSize = height * width;
             let imageBuffer = new Uint8ClampedArray(imageBufferSize);
@@ -304,7 +303,7 @@ class Serializer {
 }
 
 export function registerClass(constructor) {
-    if(CLASSES.has(hashStr(constructor.name))) {
+    if (CLASSES.has(hashStr(constructor.name))) {
         console.error('Found same hash in classes');
     }
     CLASSES.set(hashStr(constructor.name), constructor);

@@ -16,7 +16,7 @@ export class EventSourceTrait {
         this.eventHandlers[event].unshift(handler);
     }
 
-    protected trigger(event: string, ...args) {
+    public trigger(event: string, ...args) {
         if (!(event in this.eventHandlers)) {
             return;
         }

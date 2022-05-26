@@ -16,6 +16,7 @@ export abstract class Manager {
     protected handleComponentsAt(type, arr: Component[]) {
         this.game.getScene().attachEventListener('attached', (event) => Manager.catchComponent(event.data[0], type, arr));
         this.game.getScene().attachEventListener('detached', (event) => Manager.removeComponent(event.data[0], type, arr));
+        this.game.getScene().getObjects().forEach(obj => Manager.catchComponent(obj, type, arr))
     }
 
     private static catchComponent(atom: Atom, type, store: Component[]) {

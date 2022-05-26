@@ -1,12 +1,11 @@
 import {Serializable} from '../../network/transport/serializable';
 import {Component} from "../component/component";
-import {Vector} from '../math/vector';
 import {useTrait} from "../util/utils";
 import {EventSourceTrait} from "../event/event-source-trait";
 import {registerClass} from "../../network/transport/serializer";
 import {NetworkType} from "../../network/transport/network-type";
-import shortid = require("shortid");
 import {Transform} from "./transform";
+import shortid = require("shortid");
 
 /**
  * Базовый игровой объект
@@ -35,10 +34,11 @@ export class Atom extends Serializable {
     static get netScheme() {
         return {
             id: {type: NetworkType.STRING},
-            position: {type: NetworkType.SERIALIZABLE_OBJECT},
+            transform: {type: NetworkType.SERIALIZABLE_OBJECT},
+            // position: {type: NetworkType.SERIALIZABLE_OBJECT},
             components: {type: NetworkType.LIST, itemType: NetworkType.SERIALIZABLE_OBJECT},
-            scale: {type: NetworkType.SERIALIZABLE_OBJECT},
-            rotation: {type: NetworkType.SERIALIZABLE_OBJECT},
+            // scale: {type: NetworkType.SERIALIZABLE_OBJECT},
+            // rotation: {type: NetworkType.SERIALIZABLE_OBJECT},
         };
     };
 

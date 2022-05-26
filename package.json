@@ -4,6 +4,7 @@
   "description": "Игровой движок",
   "main": "index.js",
   "scripts": {
+    "start:server": "ts-node-dev --respawn src/entries/server.ts",
     "test": "./node_modules/.bin/webpack --watch --config webpack.test.config.js",
     "type-check": "tsc --noEmit",
     "type-check:watch": "npm run type-check -- --watch",
@@ -18,17 +19,9 @@
     "lib": "lib"
   },
   "dependencies": {
-    "@types/ammo.js": "github:osman-turan/ammo.js-typings",
-    "@types/msgpack-lite": "^0.1.7",
-    "@types/node": "^13.7.0",
-    "@types/shortid": "0.0.29",
-    "@types/websocket": "^1.0.0",
-    "@types/ws": "^7.2.4",
-    "ammo.js": "0.0.10",
     "msgpack-lite": "^0.1.26",
     "shortid": "^2.2.15",
     "socket.io": "^2.3.0",
-    "three": "^0.125.2",
     "ts-loader": "^6.2.1",
     "tsmix-linter": "^1.4.3",
     "typescript": "^3.7.5",
@@ -38,5 +31,13 @@
     "webpack-cli": "^3.3.11",
     "ws": "^7.3.0"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "@types/ammo.js": "github:osman-turan/ammo.js-typings",
+    "@types/msgpack-lite": "^0.1.7",
+    "@types/node": "^13.7.0",
+    "@types/shortid": "0.0.29",
+    "@types/websocket": "^1.0.5",
+    "@types/ws": "^7.2.4",
+    "ts-node-dev": "^1.1.8"
+  }
 }

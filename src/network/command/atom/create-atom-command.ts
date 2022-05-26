@@ -16,6 +16,6 @@ export class CreateAtomCommand extends ServerCommand {
 
     execute(game: Game) {
         this.objects.forEach((atom: Atom) => game.getScene().attach(atom));
-        console.log(this.objects);
     }
 }
+

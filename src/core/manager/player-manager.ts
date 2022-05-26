@@ -9,7 +9,7 @@ export class PlayerManager extends Manager implements INetworkManager {
 
     registerPlayer(player: Player) {
         this.game.attachPlayer(player);
-        this.commands.push(new InitPlayerCommand({player: player}));
+        this.commands.push(new InitPlayerCommand(player));
     }
 
     getCommands(): Command[] | null {

@@ -2,17 +2,19 @@ import {Transport} from "../transport";
 import {Client} from "../../client/client";
 import {Command} from "../../command/command";
 import {Game} from "../../../core/game";
-import * as Websocket from 'ws';
+import * as WebsocketModule from 'ws';
+import {ServerOptions} from 'ws';
+import {w3cwebsocket} from "websocket";
 
 export class ServerTransport extends Transport {
     clientsCollection: ClientCollection = new ClientCollection();
-    server: Websocket.Server;
+    server: WebsocketModule.Server;
 
-    constructor(game: Game, config: {}) {
+    constructor(game: Game, config: ServerOptions) {
         super(game);
-        this.server = new Websocket.Server(config);
+        this.server = new WebsocketModule.Server(config);
         this.server.addListener("close", (connection) => this.onClose(connection, 1, ''));
-        this.server.addListener("connection", (connection) => this.onConnection(connection));
+        this.server.addListener("connection", (connection) => this.onConnection(connection as any));
         console.log('Start Listening');
     }
 
@@ -34,7 +36,7 @@ export class ServerTransport extends Transport {
         this.handleCommands(this.unpackCommands(data), client);
     }
 
-    onConnection(socket: Websocket) {
+    onConnection(socket: w3cwebsocket) {
         let client = new Client(socket, this.serializer);
         this.clientsCollection.add(client, socket);
         console.log('client connected (' + client.id + ')');
@@ -45,7 +47,7 @@ export class ServerTransport extends Transport {
         };
     }
 
-    onClose(socket: Websocket, reason: number, desc: string) {
+    onClose(socket: WebsocketModule, reason: number, desc: string) {
         let client = this.clientsCollection.getBySocket(socket);
         client.close();
         this.trigger('disconnect', client);
@@ -55,18 +57,18 @@ export class ServerTransport extends Transport {
 
 class ClientCollection {
     clients: Map<string, Client>;
-    sockets: Map<string, Websocket>;
+    sockets: Map<string, w3cwebsocket>;
 
     constructor() {
         this.clients = new Map<string, Client>();
-        this.sockets = new Map<string, Websocket>();
+        this.sockets = new Map<string, w3cwebsocket>();
     }
 
     public getClient(clientId: string): Client {
         return this.clients[clientId];
     }
 
-    public getSocket(clientId: string): Websocket {
+    public getSocket(clientId: string): w3cwebsocket {
         return this.sockets[clientId];
     }
 
@@ -83,7 +85,7 @@ class ClientCollection {
         delete this.sockets[clientId];
     }
 
-    public add(client: Client, socket: Websocket) {
+    public add(client: Client, socket: w3cwebsocket) {
         this.sockets.set(client.id, socket);
         this.clients.set(client.id, client);
     }

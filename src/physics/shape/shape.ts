@@ -1,5 +1,6 @@
 import {Vector} from "../math/vector";
-import * as Ammo from "ammo.js/ammo";
+// @ts-ignore
+import * as Ammo from "ammo.js";
 import {EventSourceTrait} from "../../core/event/event-source-trait";
 import {use} from "typescript-mix";
 

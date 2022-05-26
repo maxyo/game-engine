@@ -13,14 +13,12 @@ import {
     isUpdatableManager,
     IUpdatableManager
 } from "./manager/manager-types";
-import {AtomManager} from "./manager/atom-manager";
 import {Client} from "../network/client/client";
 import {EventSourceTrait} from "./event/event-source-trait";
 import {use} from "typescript-mix";
 import {Player} from "./player";
-import {PlayerManager} from "./manager/player-manager";
-import {InputManager} from "./manager/input-manager";
-import {RpcManager} from "./manager/rpc-manager";
+import {ServerOptions} from "ws";
+import {NullTransport} from "../network/transport/null.transport";
 
 export interface Game extends EventSourceTrait {
 
@@ -73,8 +71,12 @@ export class Game {
             this.transport = new ServerTransport(this, config.serverConfig);
             this.processNetwork = this.processServerNetwork;
         } else {
-            this.transport = new ClientTransport(this, config.serverAddress, config.port);
-            this.processNetwork = this.processClientNetwork;
+            if (config.serverAddress) {
+                this.transport = new ClientTransport(this, config.serverAddress, config.port);
+                this.processNetwork = this.processClientNetwork;
+            } else {
+                this.transport = new NullTransport(this);
+            }
         }
         this.networkService = new NetworkService(this.transport);
     }
@@ -83,10 +85,10 @@ export class Game {
         this.initManagers();
     }
 
-    public start() {
+    public async start() {
         this.init();
         this.state = GameState.Running;
-        this.loop();
+        await this.loop();
     }
 
     public getScene(): Scene {
@@ -94,6 +96,7 @@ export class Game {
     }
 
     private initManagers() {
+        console.log(this.allManagers)
         for (let manager of this.allManagers) {
             manager.init();
         }
@@ -207,7 +210,7 @@ export class Game {
         for (let manager of this.allManagers) {
             if (manager instanceof type) {
                 this.detachManager(manager);
-                return manager;
+                return manager as T;
             }
         }
     }
@@ -225,7 +228,7 @@ export class Game {
 
 export interface IGameConfig {
     mode: GameMode,
-    serverConfig?: {},   // if mode==Server
+    serverConfig?: ServerOptions,   // if mode==Server
     scenePath?: string,             // if mode==Server
 
     serverAddress?: string,         // if mode==Client

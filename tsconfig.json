@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-
+    "esModuleInterop": true,
     "experimentalDecorators": true,
     "alwaysStrict": true,
     "module": "commonjs",
