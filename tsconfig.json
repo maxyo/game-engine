@@ -3,16 +3,22 @@
     "esModuleInterop": true,
     "experimentalDecorators": true,
     "alwaysStrict": true,
+    "declaration": true,
     "module": "commonjs",
-    "target": "es2015",
+    "strictNullChecks": true,
+    "target": "ES6",
     "sourceMap": true,
-    "allowJs": true,
+    "allowJs": false,
+    "outDir": "dist",
     "baseUrl": ".",
     "paths": {
-      "msgpack": ["node_modules/msgpack-js/msgpack"]
+      "msgpack": [
+        "node_modules/msgpack-js/msgpack"
+      ]
     }
   },
   "exclude": [
-    "dist"
+    "dist",
+    "tests"
   ]
 }

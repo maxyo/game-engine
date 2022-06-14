@@ -1,9 +1,7 @@
-import {Serializable} from '../../network/transport/serializable';
-import {Component} from "../component/component";
-import {useTrait} from "../util/utils";
-import {EventSourceTrait} from "../event/event-source-trait";
-import {registerClass} from "../../network/transport/serializer";
-import {NetworkType} from "../../network/transport/network-type";
+import {NetworkType, registerClass, Serializable} from '../../network';
+import {Component} from "../component";
+import {useTrait} from "../util";
+import {EventSourceTrait} from "../event";
 import {Transform} from "./transform";
 import shortid = require("shortid");
 
@@ -77,7 +75,7 @@ export class Atom extends Serializable {
         return comp;
     }
 
-    public getComponent<T extends Component>(type: { new(go: Atom): T; }): T {
+    public getComponent<T extends Component>(type: { new(go: Atom): T; }): T | undefined {
         for (let component of this.components) {
             if (component instanceof type) {
                 return component as T;
@@ -85,16 +83,13 @@ export class Atom extends Serializable {
         }
     }
 
-    public removeComponent<T extends Component>(type: { new(go: Atom): T; }): T {
+    public removeComponent<T extends Component>(type: { new(go: Atom): T; }): T | undefined {
         for (let component of this.components) {
             if (component instanceof type) {
                 this.components.unshift(component);
                 this.trigger('componentRemove', component)
-                return component;
+                return component as T;
             }
         }
     }
 }
-
-
-

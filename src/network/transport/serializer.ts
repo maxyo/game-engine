@@ -183,7 +183,7 @@ class Serializer {
     }
 
     readDataView(dataView: DataView, bufferOffset: number, netSchemProp: any) {
-        let data, bufferSize;
+        let data: any, bufferSize;
 
         if (netSchemProp.type === NetworkType.FLOAT32) {
             data = dataView.getFloat32(bufferOffset);
@@ -207,7 +207,7 @@ class Serializer {
             if (length === MAX_UINT_16) {
                 data = null;
             } else {
-                let a = [];
+                let a: number[] = [];
                 for (let i = 0; i < length; i++)
                     a[i] = dataView.getUint16(bufferOffset + localBufferOffset + i * 2);
                 data = String.fromCharCode.apply(null, a);
@@ -219,7 +219,7 @@ class Serializer {
             bufferSize = deserializeData.byteOffset;
         } else if (netSchemProp.type === NetworkType.LIST) {
             let localBufferOffset = 0;
-            let items = [];
+            let items: any[] = [];
             let itemCount = dataView.getUint16(bufferOffset + localBufferOffset);
             localBufferOffset += Uint16Array.BYTES_PER_ELEMENT;
 
@@ -238,7 +238,7 @@ class Serializer {
             if (length === MAX_UINT_16) {
                 data = null;
             } else {
-                let a = [];
+                let a: number[] = [];
                 for (let i = 0; i < length; i++)
                     a[i] = dataView.getUint16(bufferOffset + localBufferOffset + i * 2);
                 data = this.networkObjects.get(String.fromCharCode.apply(null, a));

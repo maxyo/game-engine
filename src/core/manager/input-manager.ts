@@ -5,7 +5,7 @@ import {Game} from "../game";
 import {EventSourceTrait} from "../event/event-source-trait";
 import {use} from "typescript-mix";
 
-export interface InputManager extends EventSourceTrait{
+export interface InputManager extends EventSourceTrait {
 
 }
 
@@ -17,7 +17,7 @@ export class InputManager extends Manager implements IUpdatableManager, INetwork
 
     constructor(game: Game) {
         super(game);
-        this.frame = window.document.getElementById('game-frame');
+        this.frame = window.document.getElementById('game-frame') as HTMLCanvasElement;
         this.frame.addEventListener('click', (e) => {
         });
 
@@ -35,16 +35,15 @@ export class InputManager extends Manager implements IUpdatableManager, INetwork
 
     }
 
-    public update() {
-
+    public async update() {
+        return Promise.resolve();
     }
 
-    getCommands(): Command[] | null {
+    async getCommands(): Promise<Command[] | undefined> {
         if (this.commands.length != 0) {
             let result = this.commands;
             this.commands = [];
             return result;
         }
-        return null;
     }
 }

@@ -71,7 +71,7 @@ export class Game {
             this.transport = new ServerTransport(this, config.serverConfig);
             this.processNetwork = this.processServerNetwork;
         } else {
-            if (config.serverAddress) {
+            if (config.serverAddress && config.port) {
                 this.transport = new ClientTransport(this, config.serverAddress, config.port);
                 this.processNetwork = this.processClientNetwork;
             } else {
@@ -96,7 +96,6 @@ export class Game {
     }
 
     private initManagers() {
-        console.log(this.allManagers)
         for (let manager of this.allManagers) {
             manager.init();
         }
@@ -113,15 +112,15 @@ export class Game {
             elapsed = curTime - prevTime;
             lag += elapsed;
 
-            this.processInput();
+            await this.processInput();
 
             while (lag >= MS_PER_TICK) {
-                this.processManagers(1 + ((lag % MS_PER_TICK) / MS_PER_TICK));
+                await this.processManagers(1 + ((lag % MS_PER_TICK) / MS_PER_TICK));
                 lag -= MS_PER_TICK + (lag % MS_PER_TICK);
             }
 
-            this.processNetwork();
-            this.processRender();
+            await this.processNetwork();
+            await this.processRender();
 
             prevTime = curTime;
 
@@ -129,38 +128,54 @@ export class Game {
         }
     }
 
-    private processNetwork(): void {
+    private processNetwork() {
     }
 
-    private processServerNetwork(): void {
-        for (let manager of this.networkManagers) {
-            this.networkService.pushCommands(manager.getCommands());
-        }
-        for (let manager of this.selectiveNetworkManagers) {
-            for (let [key, client] of (this.transport as ServerTransport).clientsCollection.clients) {
-                this.networkService.pushCommands(manager.getCommandsForClient(client));
+    private async processServerNetwork(): Promise<void> {
+        const promises: Promise<void>[] = [];
+        promises.push(...this.networkManagers.map(async manager => {
+            const commands = await manager.getCommands();
+            if (commands) {
+                this.networkService.pushCommands(commands);
             }
-        }
+        }));
+        promises.push(...this.selectiveNetworkManagers.map(async manager => {
+            for (let [key, client] of (this.transport as ServerTransport).clientsCollection.clients) {
+                const commands = await manager.getCommandsForClient(client);
+                if (commands) {
+                    this.networkService.pushCommands(commands);
+                }
+            }
+        }));
+
+        await Promise.all(promises);
+
         this.networkService.transmit();
     }
 
-    private processClientNetwork(): void {
-        for (let manager of this.networkManagers) {
-            this.networkService.pushCommands(manager.getCommands());
-        }
+    private async processClientNetwork(): Promise<void> {
+        const promises = this.networkManagers.map(async manager => {
+            const commands = await manager.getCommands();
+            if (commands) {
+                this.networkService.pushCommands(commands);
+            }
+        })
+        await Promise.all(promises);
+
         this.networkService.transmit();
     }
 
-    private processManagers(tick_lag: number) {
-        for (let manager of this.updatableManagers) {
-            manager.update(tick_lag);
-        }
+    private async processManagers(tick_lag: number) {
+        const promises = this.updatableManagers.map(async manager => manager.update(tick_lag))
+        await Promise.all(promises);
     }
 
     private processInput() {
+        return Promise.resolve();
     }
 
     private processRender() {
+        return Promise.resolve();
     }
 
     private loadScene(scene: Scene) {
@@ -192,13 +207,13 @@ export class Game {
         this.trigger('managerRemove', manager)
     }
 
-    public addManager<T extends Manager>(type: { new(game: Game): T; }): T {
+    public addManager<T extends Manager>(type: { new(game: Game): T; }): T | undefined {
         let manager = new type(this);
         this.attachManager(manager)
         return manager;
     }
 
-    public getManager<T extends Manager>(type: { new(game: Game): T; }): T {
+    public getManager<T extends Manager>(type: { new(game: Game): T; }): T | undefined {
         for (let manager of this.allManagers) {
             if (manager instanceof type) {
                 return manager as T;
@@ -206,7 +221,7 @@ export class Game {
         }
     }
 
-    public removeManager<T extends Manager>(type: { new(game: Game): T; }): T {
+    public removeManager<T extends Manager>(type: { new(game: Game): T; }): T | undefined {
         for (let manager of this.allManagers) {
             if (manager instanceof type) {
                 this.detachManager(manager);

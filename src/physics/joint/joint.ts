@@ -1,7 +1,6 @@
 import {RigidBodyInterface} from "../rigidbody/rigid-body-interface";
-import {EventSourceTrait} from "src/core/event/event-source-trait";
 import {use} from "typescript-mix";
-import {Vector} from "../math/vector";
+import {EventSourceTrait, Vector} from "../../core";
 
 
 export interface Joint extends EventSourceTrait {

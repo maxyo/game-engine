@@ -1,12 +1,15 @@
-import {Game, GameMode} from "../core/game";
-import {CanvasManager} from "../render/canvas/manager/canvas.manager";
-import {AtomManager} from "../core/manager/atom-manager";
-import {Atom} from "../core/scene/atom";
-import {CanvasComponent} from "../render/canvas/component/canvas.component";
-import {BoxShape} from "../render/canvas/shape/box.shape";
-import {CircleShape} from "../render/canvas/shape/circle.shape";
-import {MeshShape} from "../render/canvas/shape/mesh.shape";
-import {Vector} from "../core/math/vector";
+import {
+    Atom,
+    AtomManager,
+    BoxShape,
+    CanvasComponent,
+    CanvasManager,
+    CircleShape,
+    Game,
+    GameMode,
+    MeshShape,
+    Vector
+} from "../../src";
 
 let game = new Game({
     mode: GameMode.Front,
@@ -16,6 +19,9 @@ let game = new Game({
 function initView(game: Game) {
     const canvasManager = game.addManager(CanvasManager);
     const atomManager = game.getManager(AtomManager);
+    if (!atomManager || !canvasManager) {
+        throw new Error();
+    }
     const box = new Atom();
     box.transform.position.add(100, 100);
     const boxComponent = box.addComponent(CanvasComponent);
@@ -64,3 +70,4 @@ void game.start();
 // playerManager.registerPlayer(new Player({
 //     nickname: 'user'
 // }));
+

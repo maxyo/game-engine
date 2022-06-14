@@ -24,7 +24,7 @@ export class RpcManager extends Manager implements ISelectiveNetworkManager {
         // }
     }
 
-    getCommandsForClient(client: Client): Command[] | null {
+    async getCommandsForClient(client: Client): Promise<Command[] | undefined> {
         // if (this.command.has(client)) {
         //     let result = this.command.get(client);
         //     this.command.set(client, []);
@@ -32,7 +32,7 @@ export class RpcManager extends Manager implements ISelectiveNetworkManager {
         // }
         // return null;
 
-        if( this.allCommands.length != 0) {
+        if (this.allCommands.length != 0) {
             let result = this.allCommands;
             this.allCommands = [];
             return result;

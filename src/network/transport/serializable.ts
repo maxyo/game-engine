@@ -2,7 +2,7 @@ import {hashStr} from "../../core/util/utils";
 import {NetworkType} from "./network-type";
 
 export interface Serializable {
-    constructor: SerializablePrototype
+    constructor(properties?: Record<string, any>): SerializablePrototype
 }
 
 export class Serializable {
@@ -11,8 +11,8 @@ export class Serializable {
         return {}
     };
 
-    public constructor(properties = {}) {
-        Object.assign(this, properties);
+    public constructor(properties: Record<string, any> = {}) {
+        Object.assign(this as any, properties);
     }
 
     /**
@@ -41,8 +41,8 @@ export class Serializable {
         let localBufferOffset = 0; // used for counting the bufferOffset
 
         // instance netScheme
-        if (this.constructor.netScheme) {
-            netScheme = this.constructor.netScheme;
+        if ((this.constructor as any).netScheme) {
+            netScheme = (this.constructor as any).netScheme;
         } else {
             console.warn('no netScheme defined! This will result in awful performance');
         }
@@ -120,7 +120,7 @@ export class Serializable {
     }
 
     syncTo(other) {
-        let netScheme = this.constructor.netScheme;
+        let netScheme = (this.constructor as any).netScheme;
         for (let p of Object.keys(netScheme)) {
 
             if (netScheme[p].type === NetworkType.LIST)

@@ -10,9 +10,7 @@ export class NetworkService {
     }
 
     public pushCommands(commands: Command[]) {
-        if (commands) {
-            this.commands.push(...commands);
-        }
+        this.commands.push(...commands);
     }
 
     public transmit() {

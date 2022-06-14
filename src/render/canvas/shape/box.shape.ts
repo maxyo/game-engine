@@ -5,8 +5,8 @@ import {registerClass} from "../../../network/transport/serializer";
 @registerClass
 export class BoxShape extends Shape {
     constructor(
-        public readonly width: number,
-        public readonly height: number
+        public width: number,
+        public height: number
     ) {
         super()
     }

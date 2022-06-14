@@ -12,13 +12,12 @@ export class PlayerManager extends Manager implements INetworkManager {
         this.commands.push(new InitPlayerCommand(player));
     }
 
-    getCommands(): Command[] | null {
+    async getCommands(): Promise<Command[] | undefined> {
         if (this.commands.length != 0) {
             let result = this.commands;
             this.commands = [];
             return result;
         }
-        return null;
     }
 
 }

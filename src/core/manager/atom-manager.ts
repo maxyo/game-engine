@@ -41,7 +41,7 @@ export class AtomManager extends Manager {
     }
 
     getCommands(client: Client): Command[] | null {
-        let result = [];
+        let result: Command[] = [];
 
         if (this.createCommand.objects.length) {
             result.push(this.createCommand);
@@ -72,7 +72,7 @@ export class AtomManager extends Manager {
 
     private onSceneAtomDetached(atoms) {
         atoms.forEach((atom) => {
-            // this.atoms.remove(atom);
+            this.atoms.remove(atom);
         })
     }
 

@@ -45,7 +45,7 @@ export class Vector {
         this._Z = value;
     }
 
-    public set(x: Vector | number, y: number = null, z: number = null): Vector {
+    public set(x: Vector | number, y: number | null = null, z: number | null = null): Vector {
         if (x instanceof Vector) {
             this._X = x.x;
             this._Y = x.y;
@@ -57,15 +57,15 @@ export class Vector {
                 this._Z = x;
             } else {
                 this._X = x;
-                this._Y = y;
-                this._Z = z;
+                this._Y = y as number;
+                this._Z = z as number;
             }
         }
         return this;
     }
 
 
-    public add(x: Vector | number, y: number = null, z: number = null): Vector {
+    public add(x: Vector | number, y: number | null = null, z: number | null = null): Vector {
         if (x instanceof Vector) {
             this._X += x.x;
             this._Y += x.y;
@@ -77,8 +77,8 @@ export class Vector {
                 this._Z += x;
             } else {
                 this._X += x;
-                this._Y += y;
-                this._Z += z;
+                this._Y += y as number;
+                this._Z += z as number;
             }
         }
         return this;

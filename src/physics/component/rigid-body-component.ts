@@ -2,7 +2,7 @@ import {Component} from "../../core/component/component";
 import {Atom} from "../../core/scene/atom";
 
 // @ts-ignore
-export class RigidBodyComponent extends Component implements IUpdatable {
+export class RigidBodyComponent extends Component {
 
     private static _emptyShape;
 

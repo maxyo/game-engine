@@ -1,8 +1,8 @@
 import {Atom} from "../../../core/scene/atom";
 import {ServerCommand} from "../command";
-import {Game} from "src/core/game";
 import {NetworkType} from "../../transport/network-type";
 import {registerClass} from "../../transport/serializer";
+import {Game} from "../../../core";
 
 @registerClass
 export class CreateAtomCommand extends ServerCommand {

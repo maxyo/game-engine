@@ -6,7 +6,7 @@ export class Tree<K, V> {
     leaves: Tree<K, V>[] = [];
     root: Tree<K, V>;
 
-    constructor(key: K = null, value: V = null, root: Tree<K, V> = null) {
+    constructor(key: K, value: V, root: Tree<K, V>) {
         this.key = key;
         this.value = value;
     }
@@ -19,20 +19,20 @@ export class Tree<K, V> {
 
     public isChildOf(childKey: K, parentKey: K): boolean {
         let container = this.find(parentKey);
-        return container && container.find(childKey) != null;
+        return (container != null && container.find(childKey) != null);
     }
 
     public getAllChildren(parentKey: K): Map<K, V> {
         let result = new Map<K, V>();
         let parentLeave = this.find(parentKey);
-        parentLeave.recursiveGetAll(result);
+        parentLeave?.recursiveGetAll(result);
         return result;
     }
 
     public getPath(parentKey: K, childrenKey: K) {
         let parentLeave = this.find(parentKey);
 
-        parentLeave.find(childrenKey);
+        parentLeave?.find(childrenKey);
     }
 
     public forEachRecursive(callback: (leave: Tree<K, V>, path: Tree<K, V>[]) => void, path: Tree<K, V>[] = []) {
@@ -51,7 +51,7 @@ export class Tree<K, V> {
         }
     }
 
-    public find(key: K, path: Map<K, V> = new Map<K, V>()): Tree<K, V> {
+    public find(key: K, path: Map<K, V> = new Map<K, V>()): Tree<K, V> | null {
         for (let leave of this.leaves) {
             if (leave.key === key) {
                 return leave;
@@ -90,7 +90,7 @@ export function distinctFilter(value, index, self) {
     return self.indexOf(value) === index;
 }
 
-export function hashStr(str, bits = null) {
+export function hashStr(str, bits: number | null = null) {
     let hash = 532;
     let i = str.length;
     bits = bits ? bits : 8;
@@ -110,12 +110,16 @@ declare global {
     }
 }
 Array.prototype.remove = (el: any) => {
-    delete this[this.indexOf(el)];
+    const index = (this as any).indexOf(el)
+    if (index) {
+        delete (this as any)[index];
+    }
 }
 
 declare global {
     interface Math {
         clamp(value: number, min: number, max: number): number;
+
         lerp(value1: number, value2: number, amount: number): number;
     }
 }
@@ -124,8 +128,7 @@ Math.clamp = function (value, min, max) {
 
     if (value < min) {
         return min;
-    }
-    else if (value > max) {
+    } else if (value > max) {
         return max;
     }
 

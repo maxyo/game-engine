@@ -1,5 +1,5 @@
-import {Vector} from "../math/vector";
 import {Shape} from "../shape/shape";
+import {Vector} from "../../core";
 
 export interface RigidBodyInterface {
     // todo change to component interface

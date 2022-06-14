@@ -27,8 +27,8 @@ export class CanvasManager extends Manager implements IUpdatableManager {
         this.canvas = element;
     }
 
-    update(tpf: number) {
-        const ctx: CanvasRenderingContext2D = this.canvas.getContext('2d');
+    async update(tpf: number): Promise<void> {
+        const ctx: CanvasRenderingContext2D = this.canvas.getContext('2d') as CanvasRenderingContext2D;
         ctx.shadowColor = 'white'
         ctx.shadowBlur = 20
         ctx.shadowOffsetX = 2
@@ -46,6 +46,7 @@ export class CanvasManager extends Manager implements IUpdatableManager {
             }
             ctx.closePath();
         });
+        return Promise.resolve();
     }
 
     private drawBox(ctx: CanvasRenderingContext2D, component: CanvasComponent & { shape: BoxShape }) {

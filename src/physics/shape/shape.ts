@@ -1,8 +1,8 @@
-import {Vector} from "../math/vector";
 // @ts-ignore
 import * as Ammo from "ammo.js";
 import {EventSourceTrait} from "../../core/event/event-source-trait";
 import {use} from "typescript-mix";
+import {Vector} from "../../core";
 
 export interface Shape extends EventSourceTrait {
 

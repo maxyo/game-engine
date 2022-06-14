@@ -10,7 +10,7 @@ export class ServerTransport extends Transport {
     clientsCollection: ClientCollection = new ClientCollection();
     server: WebsocketModule.Server;
 
-    constructor(game: Game, config: ServerOptions) {
+    constructor(game: Game, config?: ServerOptions) {
         super(game);
         this.server = new WebsocketModule.Server(config);
         this.server.addListener("close", (connection) => this.onClose(connection, 1, ''));
@@ -49,6 +49,9 @@ export class ServerTransport extends Transport {
 
     onClose(socket: WebsocketModule, reason: number, desc: string) {
         let client = this.clientsCollection.getBySocket(socket);
+        if (!client) {
+            return;
+        }
         client.close();
         this.trigger('disconnect', client);
         console.log('client disconnected (' + client.id + ')');
@@ -72,7 +75,7 @@ class ClientCollection {
         return this.sockets[clientId];
     }
 
-    public getBySocket(socket: any): Client {
+    public getBySocket(socket: any): Client | undefined {
         for (let [clientId, s] of Object.entries(this.sockets)) {
             if (socket == s) {
                 return this.clients[clientId];

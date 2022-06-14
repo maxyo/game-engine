@@ -1,7 +1,7 @@
 import {Transport} from "../transport";
 import {Client} from "../../client/client";
 import {Command} from "../../command/command";
-import {Game} from "src/core/game";
+import {Game} from "../../../core";
 
 export class ClientTransport extends Transport {
 
